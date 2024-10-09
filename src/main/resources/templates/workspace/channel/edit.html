@@ -1,0 +1,85 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+        
+
+
+        <main class="py-8 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+
+            <form th:action="@{/w/{workspaceId}/c/{channelId}/edit(workspaceId=${workspace.id}, channelId=${channel.id})}" method="post"
+                  modelAttribute="channel"
+                  x-data="{ 
+                    name: '', 
+                    initialName: '',
+                    isSubmitting: false,
+                    init() {
+                      this.name = this.initialName = $refs.name.value;
+                    },
+                    isChanged() {
+                      return (this.name.trim() !== this.initialName.trim() && this.name.trim() !== '');
+                    }
+                  }"
+                  x-on:submit.prevent="if(isChanged()) { isSubmitting = true; $el.submit(); }" x-ref="form">
+              <div class="">
+                <h3 class="text-base font-semibold leading-6 text-gray-900">
+                  Edit channel
+                </h3>
+              </div>
+
+              <div class="mt-8 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div class="sm:col-span-3">
+                  <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                  <div class="mt-2">
+                    <input type="text" name="name" id="name" 
+                           x-model="name"
+                          x-ref="name"
+                           th:field="*{channel.name}"
+                           class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                           :class="{'ring-red-300': name.length > 0 && name.length < 3}">
+                        <p class="mt-2 text-sm text-red-600" x-show="name.length > 0 && name.length < 3">
+                            Name must be at least 3 characters.
+                        </p>
+                  </div>
+                </div>
+                <div class="sm:col-span-3">
+                  <label for="privacy" class="block text-sm font-medium leading-6 text-gray-900">Privacy</label>
+                  <div class="mt-2">
+                    <select id="privacy" name="privacy" th:field="*{channel.privacy}" th:value="${channel.privacy}"
+                            disabled
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:max-w-xs sm:text-sm sm:leading-6">
+                      <option value="public">Public</option>
+                      <option value="private">Private</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="sm:col-span-6">
+                  <label for="description" class="block text-sm font-medium leading-6 text-gray-900">Description</label>
+                  <div class="mt-2">
+                    <textarea id="description" name="description" rows="3" 
+                              th:field="*{channel.description}"
+                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 flex items-center justify-end gap-x-6">
+                <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Back</button>
+                <button type="submit"
+                        x-bind:disabled="!isChanged() || isSubmitting"
+                        x-bind:class="{'opacity-50 cursor-not-allowed': !isChanged() || isSubmitting, 'hover:bg-cyan-700': isChanged() && !isSubmitting}"
+                        class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
+                  <span x-text="isSubmitting ? 'Updating...' : 'Update'"></span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </main>
+      </div>
+      <div th:replace="~{fragments/javascript}"></div>
+    </body>
+</html>

@@ -1,0 +1,217 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+        
+
+
+        <main class="py-8 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+
+            <form th:action="@{/w/{workspaceId}/settings/members(workspaceId=${workspace.id})}" method="post" x-data="{
+                firstName: '',
+                lastName: '',
+                email: '',
+                isSubmitting: false,
+                formIsValid() {
+                    return this.firstName.trim() !== '' && this.lastName.trim() !== '' && this.email.trim() !== '';
+                },
+                submitForm() {
+                    if (this.formIsValid()) {
+                        this.isSubmitting = true;
+                        // Simulate form submission (replace with actual form submission logic)
+                        setTimeout(() => {
+                            this.$refs.form.submit();
+                        }, 1000);
+                    }
+                }
+            }" x-ref="form">
+            <div class="border-b border-gray-200 pb-5 sm:pb-0">
+              <h3 th:text="${workspace.name + ' Settings'}"  class="text-base font-semibold leading-6 text-gray-900">Workspace Settings</h3>
+              <div class="mt-3 sm:mt-4">
+                
+                <div>
+                  <nav class="-mb-px flex space-x-8">
+                    <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" -->
+                    <a th:href="@{/w/{workspaceId}/settings/general(workspaceId=${workspace.id})}"  
+                    class="whitespace-nowrap border-b-2 border-transparent px-1 pb-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
+                      General
+                    </a>
+
+                    <a th:href="@{/w/{workspaceId}/settings/members(workspaceId=${workspace.id})}"  
+                    class="whitespace-nowrap border-b-2 border-cyan-500 px-1 pb-4 text-sm font-medium text-cyan-600" aria-current="page">
+                      Members & Groups
+                    </a>
+                  </nav>
+                </div>
+              </div>
+            </div>
+
+
+
+            
+              <div class="mt-8 flow-root">
+                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                      <thead>
+                        <tr>
+                          <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                          <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                          <!-- <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                            <span class="sr-only">Edit</span>
+                          </th> -->
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr th:each="member: ${workspace.memberships}">
+                          <td
+                            class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                            <div class="flex items-center">
+                              <div class="h-11 w-11 flex-shrink-0">
+                                <img class="h-11 w-11 rounded-full" 
+                                th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}"
+                                th:alt="${member.user.firstName + ' ' + member.user.lastName}">
+                              </div>
+                              <div class="ml-4">
+                                <div class="font-medium text-gray-900" th:text="${member.user.firstName + ' ' + member.user.lastName}">
+                                  John Doe
+                                </div>
+                                <div class="mt-1 text-gray-500" th:text="${member.user.email}">
+                                  member@team.com
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500" th:text="${member.role}">
+                            Member
+                          </td>
+                          <!-- <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
+                          </td> -->
+                        </tr>
+            
+                        <!-- More people... -->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <div class="mt-8">
+            <div th:if="${error}" class="rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <!-- <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                  </svg>
+                </div> -->
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800" th:text="${error}">
+                    Error
+                  </h3>
+                  <!-- <div class="mt-2 text-sm text-red-700">
+                    <ul role="list" class="list-disc space-y-1 pl-5">
+                      <li>Your password must be at least 8 characters</li>
+                      <li>Your password must include at least one pro wrestling finishing move</li>
+                    </ul>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+
+            <div th:if="${success}" class="rounded-md bg-green-50 p-4">
+              <div class="flex">
+                <!-- <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+                  </svg>
+                </div> -->
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-green-800" th:text="${success}">Order completed</h3>
+                  <!-- <div class="mt-2 text-sm text-green-700">
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquid pariatur, ipsum similique veniam.</p>
+                  </div>
+                  <div class="mt-4">
+                    <div class="-mx-2 -my-1.5 flex">
+                      <button type="button" class="rounded-md bg-green-50 px-2 py-1.5 text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50">View status</button>
+                      <button type="button" class="ml-3 rounded-md bg-green-50 px-2 py-1.5 text-sm font-medium text-green-800 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-offset-2 focus:ring-offset-green-50">Dismiss</button>
+                    </div>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+            
+
+
+            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+              <div class="sm:col-span-3">
+                <label for="firstName" class="block text-sm font-medium leading-6 text-gray-900">First name</label>
+                <div class="mt-2">
+                  <input type="text" name="firstName" id="firstName" x-model="firstName"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="lastName" class="block text-sm font-medium leading-6 text-gray-900">Last name</label>
+                <div class="mt-2">
+                  <input type="text" name="lastName" id="lastName" x-model="lastName"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
+                <div class="mt-2">
+                  <input type="email" name="email" id="email" x-model="email"
+                    class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6">
+                </div>
+              </div>
+
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-x-6">
+              <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+              <button type="submit" 
+                x-bind:disabled="!formIsValid() || isSubmitting"
+                x-on:click.prevent="submitForm"
+                x-text="isSubmitting ? 'Inviting...' : 'Invite'"
+                x-bind:class="{'opacity-50 cursor-not-allowed': !formIsValid() || isSubmitting, 'hover:bg-cyan-700': formIsValid() && !isSubmitting}"
+                class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
+                Invite
+              </button>
+            </div>
+
+            
+            </form>
+
+
+
+         
+            
+          </div>
+        </main>
+
+
+        
+      </div>
+    </body>
+</html>
+
+<script>
+  function submitForm() {
+    this.isSubmitting = true;
+    // Simulate form submission (replace with actual form submission logic)
+    setTimeout(() => {
+      document.querySelector('form').submit();
+    }, 1000);
+  }
+</script>
