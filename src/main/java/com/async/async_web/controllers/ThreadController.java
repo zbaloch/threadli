@@ -73,6 +73,7 @@ public class ThreadController {
         com.async.async_web.models.Thread thread = new com.async.async_web.models.Thread();
         thread.setTitle(title);
         thread.setCreatedBy(user);
+        thread.setWorkspace(workspace);
         threadRepository.save(thread);
         Post post = new Post();
         post.setContent(content);
