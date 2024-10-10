@@ -28,6 +28,7 @@ public class Workspace {
     private User createdBy;
 
     @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("updatedAt DESC")
     private List<Thread> threads = new ArrayList<>();
 
     @PrePersist
