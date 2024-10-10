@@ -32,6 +32,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<WorkspaceMembership> workspaceMemberships = new HashSet<>();
 
+    @ManyToMany(mappedBy = "participants")
+    private Set<Thread> threads = new HashSet<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

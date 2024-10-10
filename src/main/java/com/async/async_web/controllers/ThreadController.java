@@ -58,6 +58,7 @@ public class ThreadController {
         log.info("workspace " + workspaceId);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
+        model.addAttribute("workspaceMembers", workspace.getMemberships());
         model.addAttribute("view", "workspace");
         return "workspace/thread/compose";
     }
@@ -129,7 +130,7 @@ public class ThreadController {
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
-        model.addAttribute("view", "workspace");
+        model.addAttribute("view", "inbox");
         return "workspace/thread/view";
     }
 

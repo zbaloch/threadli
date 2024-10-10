@@ -15,7 +15,6 @@ import com.async.async_web.models.Workspace;
 import com.async.async_web.models.WorkspaceMembership;
 import com.async.async_web.models.WorkspaceRole;
 import com.async.async_web.services.EmailService;
-import com.async.async_web.services.WorkspaceService;
 import com.async.async_web.repositories.UserRepository;
 import com.async.async_web.repositories.WorkspaceMembershipRepository;
 import com.async.async_web.repositories.WorkspaceRepository;
@@ -71,7 +70,7 @@ public class WorkspaceController {
         
         // If the user can access the workspace, continue with the workspace vieww
         // Redirect the user to the first channel in this workspace
-        return "workspace/index";
+        return "workspace/view";
     }
 
     @GetMapping("/w/{workspaceId}/settings/general")

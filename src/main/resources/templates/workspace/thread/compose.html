@@ -1,9 +1,7 @@
 <html class="h-full bg-white">
     <head>
         <div th:replace="~{fragments/head}"></div>
-        <script src="https://unpkg.com/@tiptap/starter-kit@2.0.0-beta.220"></script>
-    <script src="https://unpkg.com/@tiptap/extension-placeholder@2.0.0-beta.220"></script>
-
+  
     </head>
     <body class="h-full" x-data="{ isSidebarOpen: false }">
       <div>
@@ -47,6 +45,8 @@
                     </div>
                   </div>
 
+                  
+
                   <div class="col-span-full">
                     <!-- <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Post</label> -->
                     <div class="">
@@ -77,9 +77,11 @@
       <script th:inline="javascript">
         /*<![CDATA[*/
         var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+
+        
+
         /*]]>*/
       
-        console.log("workspaceId: ", workspaceId);
       
       </script>
       
@@ -89,5 +91,3 @@
       
     </body>
 </html>
-
-

@@ -2,7 +2,9 @@ package com.async.async_web.models;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -11,6 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
@@ -46,6 +50,17 @@ public class Thread {
 
     // Thread can only be cloased by who created it
     private boolean isClosed = false;
+
+    @ManyToMany
+    @JoinTable(
+        name = "thread_participants",
+        joinColumns = @JoinColumn(name = "thread_id"),
+        inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> participants = new HashSet<>();
+    
+
+
     
     // TODO: Add conclusion later
     // @Lob
