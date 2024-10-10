@@ -53,15 +53,35 @@ public class Thread {
 
     @ManyToMany
     @JoinTable(
-        name = "thread_participants",
+        name = "thread_members",
         joinColumns = @JoinColumn(name = "thread_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private Set<User> participants = new HashSet<>();
-    
+    private Set<User> members = new HashSet<>();
 
 
-    
+    // Method to add a member to the thread
+    public void addMember(User member) {
+        if (!members.contains(member)) { // Prevent duplicates
+            members.add(member);
+        }
+    }
+
+    // Optionally, you can add a method to remove a member
+    public void removeMember(User member) {
+        members.remove(member);
+    }
+
+    // Getter for members
+    public Set<User> getMembers() {
+        return members;
+    }
+
+    // Setter for members (if needed)
+    public void setMembers(Set<User> members) {
+        this.members = members;
+    }
+
     // TODO: Add conclusion later
     // @Lob
     // @Column(columnDefinition = "TEXT")

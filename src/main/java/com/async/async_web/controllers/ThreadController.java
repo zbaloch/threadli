@@ -90,8 +90,57 @@ public class ThreadController {
         model.addAttribute("post", post);
         model.addAttribute("user", user);
         
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId() + "/add-people";
 
+    }
+
+
+    @GetMapping("/w/{workspaceId}/t/{threadId}/add-people")
+    public String addPeopleToThread(@PathVariable Long workspaceId, 
+                                    @PathVariable Long threadId,
+                                Principal principal,
+                                Model model) {
+        User user = userRepository.findByEmail(principal.getName());
+        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
+        com.async.async_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+
+        model.addAttribute("workspace", workspace);
+        model.addAttribute("thread", thread);
+        model.addAttribute("user", user);
+        
+        // return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+
+        return "workspace/thread/addPeople";
+
+    }
+
+    @PostMapping("/w/{workspaceId}/t/{threadId}/add-people")
+    public String addPeopleToThreadPost(@PathVariable Long workspaceId, 
+                                    @PathVariable Long threadId,
+                                    @RequestParam List<Long> memberIds, // Accept member IDs
+                                    Principal principal,
+                                    Model model) {
+        User user = userRepository.findByEmail(principal.getName());
+        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
+        com.async.async_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+
+        // Logic to add members to the thread
+        for (Long memberId : memberIds) {
+            User member = userRepository.findById(memberId).orElse(null);
+            if (member != null) {
+                // Add logic to associate the member with the thread
+                // For example, you might have a method in your Thread model to add members
+                thread.addMember(member); // Assuming you have this method
+            }
+        }
+        
+        threadRepository.save(thread); // Save the updated thread
+
+        model.addAttribute("workspace", workspace);
+        model.addAttribute("thread", thread);
+        model.addAttribute("user", user);
+
+        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
     }
 
     @GetMapping("/w/{workspaceId}/t/{threadId}/p/{postId}/delete")

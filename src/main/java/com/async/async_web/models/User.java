@@ -32,7 +32,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<WorkspaceMembership> workspaceMemberships = new HashSet<>();
 
-    @ManyToMany(mappedBy = "participants")
+    @ManyToMany(mappedBy = "members")
     private Set<Thread> threads = new HashSet<>();
 
     @PrePersist
