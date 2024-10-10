@@ -58,7 +58,6 @@
 
                   <div th:if="${isAdmin == true}" class="mt-4 flex items-center justify-between sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start" 
                   x-data="{open: false}">
-                    <!-- <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Open</span> -->
                     <div class="relative ml-3 inline-block text-left">
                       <div>
                         <button x-on:click="open = !open"  type="button" class="-my-2 flex items-center rounded-full bg-white p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="menu-0-button" aria-expanded="false" aria-haspopup="true">
@@ -69,29 +68,9 @@
                         </button>
                       </div>
               
-                      <!--
-                        Dropdown menu, show/hide based on menu state.
-              
-                        Entering: "transition ease-out duration-100"
-                          From: "transform opacity-0 scale-95"
-                          To: "transform opacity-100 scale-100"
-                        Leaving: "transition ease-in duration-75"
-                          From: "transform opacity-100 scale-100"
-                          To: "transform opacity-0 scale-95"
-                      -->
                       <div class="absolute right-1 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-0-button" tabindex="-1"
                       x-show="open" @click.outside="open = false">
                         <div class="py-1" role="none">
-                          <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                          <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-0">
-                            <span>Edit</span>
-                          </a> -->
-                          <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-1">
-                            <span>Duplicate</span>
-                          </a> -->
-                          <!-- <button type="button" class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
-                            <span>Archive</span>
-                          </button> -->
                           <a th:href="@{/w/{workspaceId}/c/{channelId}/edit(workspaceId=${workspace.id}, channelId=${channel.id})}"
                             class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                             <span>Edit channel...</span>
@@ -109,7 +88,7 @@
             <div th:if="${channel.threads.size() == 0}" class="text-center">
               <img src="https://backend-prod.absurd.design/uploads/ckvtjdc08000114r081x1axyx.jpg" alt="Illustration" class="mx-auto h-80 text-gray-400">
               <h3 class="mt-2 text-sm font-semibold text-gray-900">Every discussion is a thread</h3>
-              <p class="mt-1 text-sm text-gray-500">Threads keep discussions on-topic. They can be linked, referenced, and searched for later. It's your Async superpower.</p>
+              <p class="mt-1 text-sm text-gray-500">Threads keep discussions on-topic. They can be linked, referenced, and searched for later. It's your Threadli superpower.</p>
               <div class="mt-6">
                 <a th:href="@{/w/{workspaceId}/c/{channelId}/compose(workspaceId=${workspace.id}, channelId=${channel.id})}" type="button" class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 

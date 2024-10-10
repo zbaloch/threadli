@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.async.async_web.models.User;
-import com.async.async_web.models.Workspace;
 import com.async.async_web.repositories.WorkspaceRepository;
 import com.async.async_web.services.UserService;
 import com.async.async_web.services.WorkspaceService;
@@ -47,7 +46,7 @@ public class HomeController {
 
          // TODO: Redirect to the default workspace
 
-        return "redirect:/w";
+        return "redirect:/w/" + user.getWorkspaceMemberships().iterator().next().getWorkspace().getId();
 
     }
 }

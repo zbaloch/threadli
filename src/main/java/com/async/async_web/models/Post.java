@@ -1,8 +1,6 @@
 package com.async.async_web.models;
 
 import java.time.Instant;
-import java.util.Calendar;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

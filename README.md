@@ -22,17 +22,17 @@ CREATE DATABASE threadli CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 Define the following environment variables (E.g. Mac OSX environment file zshrc):
 
 ```
-threadli_db_url=jdbc:mysql://127.0.0.1:3306/threadli
-async_db_user=user
-async_db_password=password
-async_email_from=name@team.com
-async_mail_host=mail.google.com
-async_mail_username=name@team.com
-async_mail_password=password
-async_host_url=https://team.com
-async_db_driver=com.mysql.cj.jdbc.Driver
-async_db_dialect=org.hibernate.dialect.MySQL8Dialect
-async_mail_port=587
+export threadli_db_url=jdbc:mysql://127.0.0.1:3306/threadli
+export async_db_user=user
+export async_db_password=password
+export async_email_from=name@team.com
+export async_mail_host=mail.google.com
+export async_mail_username=name@team.com
+export async_mail_password=password
+export async_host_url=https://team.com
+export async_db_driver=com.mysql.cj.jdbc.Driver
+export async_db_dialect=org.hibernate.dialect.MySQL8Dialect
+export async_mail_port=587
 ```
 
 Warning: File uploads do not work when using SQLite.

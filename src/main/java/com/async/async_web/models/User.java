@@ -31,5 +31,16 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private Set<WorkspaceMembership> workspaceMemberships = new HashSet<>();
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = Instant.now();
+        updatedAt = Instant.now();
+    }
+
+    // @PrePersist
+    // protected void onUpdate() {
+    //     updatedAt = Instant.now();
+    // }
     
 }

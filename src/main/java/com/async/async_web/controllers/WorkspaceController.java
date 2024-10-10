@@ -1,12 +1,9 @@
 package com.async.async_web.controllers;
 
 import java.security.Principal;
-
-import org.apache.el.stream.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +21,6 @@ import com.async.async_web.repositories.WorkspaceMembershipRepository;
 import com.async.async_web.repositories.WorkspaceRepository;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Calendar;
 import java.util.List;
 import java.security.SecureRandom;
@@ -37,9 +33,6 @@ import java.security.SecureRandom;
 public class WorkspaceController {
 
     private static final Logger log = LoggerFactory.getLogger(WorkspaceController.class);
-
-    @Autowired
-    private WorkspaceService workspaceService;
 
     @Autowired
     private WorkspaceRepository workspaceRepository;
@@ -74,10 +67,11 @@ public class WorkspaceController {
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
+        model.addAttribute("view", "inbox");
         
         // If the user can access the workspace, continue with the workspace vieww
         // Redirect the user to the first channel in this workspace
-        return "redirect:/w/" + workspaceId;
+        return "workspace/index";
     }
 
     @GetMapping("/w/{workspaceId}/settings/general")

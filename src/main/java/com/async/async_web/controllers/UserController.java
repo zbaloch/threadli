@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.async.async_web.models.User;
 import com.async.async_web.models.Workspace;
 import com.async.async_web.models.WorkspaceMembership;
@@ -140,7 +138,7 @@ public class UserController {
             model.addAttribute("workspaces", workspaces);
             model.addAttribute("user", existingUser);
 
-            return "redirect:/w/";
+            return "redirect:/w/" + workspaces.iterator().next().getId();
         } else {
             model.addAttribute("errorTitle", "Login error");
             model.addAttribute("errorMessage", "No account for this email. Signup now to selling on Async.");

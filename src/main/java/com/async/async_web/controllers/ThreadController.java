@@ -6,7 +6,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ import com.async.async_web.repositories.UserRepository;
 import com.async.async_web.repositories.WorkspaceRepository;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import java.time.Instant;
 
 
@@ -50,9 +48,8 @@ public class ThreadController {
     private PostRepository postRepository;
     
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/compose")
+    @GetMapping("/w/{workspaceId}/compose")
     public String accessWorkspace(@PathVariable Long workspaceId, 
-                                    @PathVariable Long channelId,
                                     Principal principal,
                                   RedirectAttributes redirectAttributes,
                                   Model model) {
@@ -61,13 +58,12 @@ public class ThreadController {
         log.info("workspace " + workspaceId);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
-        model.addAttribute("view", "channel");
-        return "workspace/channel/thread/compose";
+        model.addAttribute("view", "workspace");
+        return "workspace/thread/compose";
     }
 
-    @PostMapping("/w/{workspaceId}/c/{channelId}/compose")
+    @PostMapping("/w/{workspaceId}/compose")
     public String createThread(@PathVariable Long workspaceId, 
-                                @PathVariable Long channelId,
                                 @RequestParam("title") String title,
                                 @RequestParam("content") String content,
                                 Principal principal,
@@ -96,7 +92,7 @@ public class ThreadController {
 
     }
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/p/{postId}/delete")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/p/{postId}/delete")
         public String deletePost(@PathVariable Long workspaceId, 
         @PathVariable Long channelId,
         @PathVariable Long threadId,
@@ -115,9 +111,8 @@ public class ThreadController {
     
 
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}")
+    @GetMapping("/w/{workspaceId}/t/{threadId}")
     public String getThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
@@ -133,13 +128,12 @@ public class ThreadController {
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
-        model.addAttribute("view", "channel");
-        return "workspace/channel/thread/view";
+        model.addAttribute("view", "workspace");
+        return "workspace/thread/view";
     }
 
-    @PostMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}")
+    @PostMapping("/w/{workspaceId}/t/{threadId}")
     public String postThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             @RequestParam("content") String content,
                             Principal principal,
@@ -165,15 +159,14 @@ public class ThreadController {
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
-        model.addAttribute("view", "channel");
+        model.addAttribute("view", "workspace");
         return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
     }
 
 
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/delete")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/delete")
     public String deleteThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
@@ -185,9 +178,8 @@ public class ThreadController {
         return "redirect:/w/" + workspace.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/pin")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/pin")
     public String pinThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
@@ -201,9 +193,8 @@ public class ThreadController {
         return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/unpin")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/unpin")
     public String unpinThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
@@ -217,9 +208,8 @@ public class ThreadController {
     }
 
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/close")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/close")
     public String closeThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
@@ -232,9 +222,8 @@ public class ThreadController {
         return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/c/{channelId}/t/{threadId}/open")
+    @GetMapping("/w/{workspaceId}/t/{threadId}/open")
     public String openThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long channelId,
                             @PathVariable Long threadId,
                             Principal principal,
                             Model model) {
