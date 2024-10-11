@@ -15,6 +15,7 @@ import com.threadli.threadli_web.models.User;
 import com.threadli.threadli_web.models.Workspace;
 import com.threadli.threadli_web.models.WorkspaceMembership;
 import com.threadli.threadli_web.models.WorkspaceRole;
+import com.threadli.threadli_web.repositories.ThreadRepository;
 import com.threadli.threadli_web.repositories.UserRepository;
 import com.threadli.threadli_web.repositories.WorkspaceMembershipRepository;
 import com.threadli.threadli_web.repositories.WorkspaceRepository;
@@ -45,6 +46,9 @@ public class WorkspaceController {
     private WorkspaceMembershipRepository workspaceMembershipRepository;
 
     @Autowired
+   private ThreadRepository threadRepository;
+
+    @Autowired
     private EmailService emailService;
     
     @GetMapping("/w")
@@ -65,9 +69,18 @@ public class WorkspaceController {
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
         log.info("isAdmin " + isAdmin);
+
+        // Get the threads in this workspace where the current user is a member.
+        log.info("User ID " + user.getId());
+        log.info("Workspaace Id " + workspaceId);
+
+        List<com.threadli.threadli_web.models.Thread> userThreads = threadRepository.findByWorkspaceIdAndMembersId(workspaceId, user.getId());
+        log.info("userThreads.size() " + userThreads.size());
+        
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
+        model.addAttribute("userThreads", userThreads);
         model.addAttribute("view", "inbox");
         
         // If the user can access the workspace, continue with the workspace vieww

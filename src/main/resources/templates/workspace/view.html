@@ -85,7 +85,7 @@
               </div>
             </div>
             
-            <div th:if="${workspace.threads.size() == 0}" class="text-center">
+            <div th:if="${userThreads.size() == 0}" class="text-center">
               <img src="https://backend-prod.absurd.design/uploads/ckvtjdc08000114r081x1axyx.jpg" alt="Illustration" class="mx-auto h-80 text-gray-400">
               <h3 class="mt-2 text-sm font-semibold text-gray-900">Every discussion is a thread</h3>
               <p class="mt-1 text-sm text-gray-500">Threads keep discussions on-topic. They can be linked, referenced, and searched for later. It's your Threadli superpower.</p>
@@ -104,9 +104,9 @@
 
             <!-- Show pinned threads first -->
 
-            <div th:if="${workspace.threads.size() > 0}" class="mt-8">
+            <div th:if="${userThreads.size() > 0}" class="mt-8">
               
-              <div class="mx-auto max-w-none" th:each="thread : ${workspace.threads}" th:if="${thread.pinned == true}">
+              <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == true}">
                 <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
@@ -162,7 +162,7 @@
                 </a>
               </div>
               
-              <div class="mx-auto max-w-none" th:each="thread : ${workspace.threads}" th:if="${thread.pinned == false && thread.isClosed == false}">
+              <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == false && thread.isClosed == false}">
                 <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
@@ -213,7 +213,7 @@
                 </a>
               </div>
 
-              <div class="mx-auto max-w-none" th:each="thread : ${workspace.threads}" th:if="${thread.pinned == false && thread.isClosed == true}">
+              <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == false && thread.isClosed == true}">
                 <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">

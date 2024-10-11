@@ -174,11 +174,22 @@ public class ThreadController {
     public String getThread(@PathVariable Long workspaceId, 
                             @PathVariable Long threadId,
                             Principal principal,
-                            Model model) {
+                            Model model,
+                            RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+             // Check if the user is a member of the thread
+        if (!thread.getMembers().contains(user)) {
+            // User is not a member, redirect to workspace page with an error message
+            redirectAttributes.addFlashAttribute("error", "You don't have access to this thread.");
+            return "redirect:/w/" + workspaceId;
+        }
+    
+
         List<Post> posts = postRepository.findByThreadId(threadId);
+
+    
 
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
         model.addAttribute("isAdmin", isAdmin);
