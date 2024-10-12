@@ -179,7 +179,7 @@
                           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                         </svg>
                         
-                        <svg class="h-1.5 w-1.5 fill-pink-500" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
+                        <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
                           th:if="${membership.user.id == user.id && !membership.caughtUp}">
                           <circle cx="3" cy="3" r="3" />
                         </svg>
