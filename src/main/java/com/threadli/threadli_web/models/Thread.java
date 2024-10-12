@@ -2,8 +2,10 @@ package com.threadli.threadli_web.models;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -54,42 +56,9 @@ public class Thread {
     // Thread can only be cloased by who created it
     private boolean isClosed = false;
 
-    @ManyToMany
-    @JoinTable(
-        name = "thread_members",
-        joinColumns = @JoinColumn(name = "thread_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private Set<User> members = new HashSet<>();
+    @OneToMany(mappedBy = "thread", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ThreadMembership> memberships = new HashSet<>();
 
-
-    // Method to add a member to the thread
-    public void addMember(User member) {
-        if (!members.contains(member)) { // Prevent duplicates
-            members.add(member);
-        }
-    }
-
-    // Optionally, you can add a method to remove a member
-    public void removeMember(User member) {
-        members.remove(member);
-    }
-
-    // Getter for members
-    public Set<User> getMembers() {
-        return members;
-    }
-
-    // Setter for members (if needed)
-    public void setMembers(Set<User> members) {
-        this.members = members;
-    }
-
-    // TODO: Add conclusion later
-    // @Lob
-    // @Column(columnDefinition = "TEXT")
-    // private String conclusion = null;
-    
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

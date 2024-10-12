@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.Calendar;
 import java.util.List;
 import java.security.SecureRandom;
+import com.threadli.threadli_web.models.Thread;
 
 
 
@@ -74,7 +75,7 @@ public class WorkspaceController {
         log.info("User ID " + user.getId());
         log.info("Workspaace Id " + workspaceId);
 
-        List<com.threadli.threadli_web.models.Thread> userThreads = threadRepository.findByWorkspaceIdAndMembersIdOrderByUpdatedAtDesc(workspaceId, user.getId());
+        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
         log.info("userThreads.size() " + userThreads.size());
         
         model.addAttribute("isAdmin", isAdmin);

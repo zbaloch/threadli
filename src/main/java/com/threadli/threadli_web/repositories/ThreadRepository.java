@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import com.threadli.threadli_web.models.Thread;
 
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 @Repository
 public interface ThreadRepository extends JpaRepository<Thread, Long> {
@@ -19,7 +17,6 @@ public interface ThreadRepository extends JpaRepository<Thread, Long> {
     // Find by channel id and thread id 
     Optional<Thread> findByWorkspaceIdAndId(Long workspaceId, Long threadId);
 
-    List<Thread> findByWorkspaceIdAndMembersId(Long workspaceId, Long userId);
+    List<Thread> findByWorkspaceIdAndMemberships_User_Id(Long workspaceId, Long userId);
 
-    List<Thread> findByWorkspaceIdAndMembersIdOrderByUpdatedAtDesc(Long workspaceId, Long userId);
 }

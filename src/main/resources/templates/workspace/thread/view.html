@@ -28,10 +28,10 @@
 
                 <div class="mt-5 flex lg:ml-4 lg:mt-0">
                   <div class="flex -space-x-2 overflow-hidden">
-                    <img th:each="member, iterStat : ${thread.members}"  
+                    <img th:each="member, iterStat : ${memberships}"  
                     class="inline-block h-10 w-10 rounded-full ring-2 ring-white" 
-                    th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.firstName + ' ' + member.lastName}" 
-                    th:alt="${member.firstName + ' ' + member.lastName}">
+                    th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}" 
+                    th:alt="${member.user.firstName + ' ' + member.user.lastName}">
                   </div>
                 </div>
 

@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.threadli.threadli_web.models.Post;
+import com.threadli.threadli_web.models.ThreadMembership;
 import com.threadli.threadli_web.models.User;
 import com.threadli.threadli_web.models.Workspace;
 import com.threadli.threadli_web.models.WorkspaceRole;
 import com.threadli.threadli_web.repositories.PostRepository;
+import com.threadli.threadli_web.repositories.ThreadMembershipRepository;
 import com.threadli.threadli_web.repositories.ThreadRepository;
 import com.threadli.threadli_web.repositories.UserRepository;
 import com.threadli.threadli_web.repositories.WorkspaceRepository;
@@ -25,6 +27,7 @@ import com.threadli.threadli_web.services.WorkspaceService;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.time.Instant;
+import com.threadli.threadli_web.models.Thread;
 
 
 
@@ -47,6 +50,9 @@ public class ThreadController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private ThreadMembershipRepository threadMembershipRepository;
     
 
     @GetMapping("/w/{workspaceId}/compose")
@@ -109,8 +115,9 @@ public class ThreadController {
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
 
-        thread.addMember(user);
-        threadRepository.save(thread);
+        ThreadMembership threadMembership = new ThreadMembership(user, thread);
+        threadMembership.setCaughtUp(true);
+        threadMembershipRepository.save(threadMembership);
 
         if(workspace.getMemberships().size() == 1) {
             return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
@@ -139,7 +146,12 @@ public class ThreadController {
                 if (member != null) {
                     // Add logic to associate the member with the thread
                     // For example, you might have a method in your Thread model to add members
-                    thread.addMember(member); // Assuming you have this method
+                    // thread.addMember(member); // Assuming you have this method
+                    ThreadMembership membership = new ThreadMembership(user, thread);
+                    membership.setThread(thread);
+                    membership.setUser(member);
+                    membership.setCaughtUp(false);
+                    threadMembershipRepository.save(membership);
                 }
             }
             
@@ -180,24 +192,24 @@ public class ThreadController {
                             RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
-             // Check if the user is a member of the thread
-        if (!thread.getMembers().contains(user)) {
-            // User is not a member, redirect to workspace page with an error message
-            redirectAttributes.addFlashAttribute("error", "You don't have access to this thread.");
-            return "redirect:/w/" + workspaceId;
+        Thread thread = threadRepository.findByWorkspaceIdAndId(workspaceId, threadId).get();
+        List<ThreadMembership> memberships = threadMembershipRepository.findByThreadId(thread.getId());
+        log.info("memberships.size() " + memberships.size());
+        for(ThreadMembership membership : memberships) {
+            log.info("" + membership.getUser().getId());
+            log.info("" + membership.getThread().getId());
+
         }
-    
+        
 
-        List<Post> posts = postRepository.findByThreadId(threadId);
-
-    
+        List<Post> posts = postRepository.findByThreadId(thread.getId());
 
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
         model.addAttribute("isAdmin", isAdmin);
 
         model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
+        model.addAttribute("memberships",memberships);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("view", "threads");
