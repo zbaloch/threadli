@@ -131,18 +131,12 @@ public class ThreadController {
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
         
-        log.info("memberIds Size: " + memberIds.size());
-
         if(memberIds != null && memberIds.size() > 0)  {
-            log.info("Adding members 1 " + memberIds);
+            
             // Logic to add members to the thread
             for (Long memberId : memberIds) {
-                log.info("Adding members 2 " + memberIds);
                 User member = userRepository.findById(memberId).orElse(null);
-                log.info("member " + member);
-                log.info("Adding members 3 " + memberIds);
                 if (member != null) {
-                    log.info("Member is not null");
                     // Add logic to associate the member with the thread
                     // For example, you might have a method in your Thread model to add members
                     thread.addMember(member); // Assuming you have this method
@@ -206,7 +200,7 @@ public class ThreadController {
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
-        model.addAttribute("view", "inbox");
+        model.addAttribute("view", "threads");
         return "workspace/thread/view";
     }
 

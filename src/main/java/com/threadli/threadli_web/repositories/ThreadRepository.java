@@ -20,4 +20,6 @@ public interface ThreadRepository extends JpaRepository<Thread, Long> {
     Optional<Thread> findByWorkspaceIdAndId(Long workspaceId, Long threadId);
 
     List<Thread> findByWorkspaceIdAndMembersId(Long workspaceId, Long userId);
+
+    List<Thread> findByWorkspaceIdAndMembersIdOrderByUpdatedAtDesc(Long workspaceId, Long userId);
 }

@@ -20,6 +20,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -95,9 +96,9 @@ public class Thread {
         updatedAt = Instant.now();
     }
 
-    // @PreUpdate
-    // protected void onUpdate() {
-    //     updatedAt = Instant.now();
-    // }
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 
 }

@@ -74,14 +74,14 @@ public class WorkspaceController {
         log.info("User ID " + user.getId());
         log.info("Workspaace Id " + workspaceId);
 
-        List<com.threadli.threadli_web.models.Thread> userThreads = threadRepository.findByWorkspaceIdAndMembersId(workspaceId, user.getId());
+        List<com.threadli.threadli_web.models.Thread> userThreads = threadRepository.findByWorkspaceIdAndMembersIdOrderByUpdatedAtDesc(workspaceId, user.getId());
         log.info("userThreads.size() " + userThreads.size());
         
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         model.addAttribute("userThreads", userThreads);
-        model.addAttribute("view", "inbox");
+        model.addAttribute("view", "threads");
         
         // If the user can access the workspace, continue with the workspace vieww
         // Redirect the user to the first channel in this workspace
