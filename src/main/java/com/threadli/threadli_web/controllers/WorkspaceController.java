@@ -75,7 +75,8 @@ public class WorkspaceController {
         log.info("User ID " + user.getId());
         log.info("Workspaace Id " + workspaceId);
 
-        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
+        // List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
+        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdOrderByUpdatedAtDesc(workspaceId, user.getId());
         log.info("userThreads.size() " + userThreads.size());
         
         model.addAttribute("isAdmin", isAdmin);

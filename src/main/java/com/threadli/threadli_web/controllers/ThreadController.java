@@ -198,8 +198,15 @@ public class ThreadController {
         for(ThreadMembership membership : memberships) {
             log.info("" + membership.getUser().getId());
             log.info("" + membership.getThread().getId());
+            if(membership.getUser().getId() == user.getId() && membership.getCaughtUp() == false) {
+                membership.setCaughtUp(true);
+                threadMembershipRepository.save(membership);
+            }
 
         }
+
+        // Mark the thread as caughtup for this user
+
         
 
         List<Post> posts = postRepository.findByThreadId(thread.getId());
@@ -226,6 +233,12 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+
+        thread.getMemberships().forEach(membership -> {
+            if(membership.getUser().getId() != user.getId()) {
+                membership.setCaughtUp(false);
+            }
+        });
 
         Post post = new Post();
         post.setContent(content);

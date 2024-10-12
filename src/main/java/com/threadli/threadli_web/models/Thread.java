@@ -41,6 +41,7 @@ public class Thread {
     private List<Post> posts = new ArrayList<>();
 
     private Instant createdAt;
+
     private Instant updatedAt;
     
     @ManyToOne(fetch = FetchType.LAZY)
