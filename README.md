@@ -36,3 +36,12 @@ export threadli_mail_port=587
 ```
 
 Warning: File uploads do not work when using SQLite.
+
+### How to run Docker image
+
+mvn package
+
+docker image build -t threadli:latest .
+
+docker run threadli:latest
+
