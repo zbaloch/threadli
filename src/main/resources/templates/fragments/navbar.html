@@ -1,0 +1,97 @@
+
+<header sec:authorize="!isAuthenticated()" class="mx-auto max-w-7xl">
+    <nav class="flex items-center justify-between py-6" aria-label="Global">
+        <div class="flex lg:flex-1">
+            <a class="-m-1.5 p-1.5" th:href="${'/'}"><span class="sr-only">Threadli</span>
+            <span class="font-bold text-sm">Threadli</span></a></div>
+        <div class="flex flex-1 justify-end">
+            <!-- <div class="mt-3"><a class="text-sm font-semibold leading-6 text-gray-900 mr-4"
+                href="/tools">Tools</a></div> -->
+            <!-- <div class="mt-3"><a class="text-sm font-semibold leading-6 text-gray-900 mr-4"
+                    href="/#pricing">Pricing</a></div> -->
+            <div class="mt-3"><a class="text-sm font-semibold leading-6 text-gray-900" th:href="@{/dashboard}">Log in</a></div>
+        </div>
+    </nav>
+</header>
+
+<header sec:authorize="isAuthenticated()" class="mx-auto max-w-7xl">
+    <nav class="flex items-center justify-between py-6" aria-label="Global" x-data="{menuOpen: false}">
+        <div class="flex lg:flex-1"><a class="-m-1.5 p-1.5" th:href="${'/dashboard'}">
+            <span class="sr-only">Threadli</span>
+            <span class="font-bold text-sm">Threadli</span></a></div>
+        <div class="flex flex-1 justify-end">
+            <!-- <div class="mt-3">
+                <a class="text-sm font-semibold leading-6 text-gray-900 mr-4"
+                    th:href="@{/dashboard}">Dashboard</a></div> -->
+
+                    <div class="flex relative -mt-8">
+
+                        <!-- <div class="mt-3"><a class="text-sm font-semibold leading-6 text-gray-900 mr-4"
+                            href="/tools">Tools</a></div> -->
+
+                    <div class="mt-3">
+                        <a class="text-sm font-semibold leading-6 text-gray-900 mr-4 cursor-pointer" @click="menuOpen = !menuOpen">
+                            Account
+                        </a>
+                    </div>
+
+                        <div x-show="menuOpen" @click.outside="menuOpen = !menuOpen"
+                            class="absolute right-0 top-full -mr-0.5 mt-3 w-60 origin-top-right divide-y divide-gray-100 rounded-lg bg-white text-sm font-normal text-slate-900 shadow-md ring-1 ring-slate-900/5 focus:outline-none sm:-mr-3.5 transform opacity-100 scale-100 z-10"
+                            aria-labelledby="headlessui-menu-button-1" id="headlessui-menu-items-46" role="menu" tabindex="0"
+                            data-headlessui-state="open">
+                            <p class="truncate px-3.5 py-3" role="none">
+                                <span class="block text-xs text-gray-500" role="none">Signed in as</span>
+                                <span class="mt-0.5 font-semibold" role="none">
+                                    <span sec:authentication="name"></span>
+                                </span></p>
+                                <!-- <div class="py-1.5" role="none">
+                                    <a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100" id="headlessui-menu-item-47" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/changelog">Changelog</a>
+                                    <a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100"
+                                    id="headlessui-menu-item-48" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/support">Support</a>
+                                    <a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100"
+                                    id="headlessui-menu-item-49" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/license">License</a>
+                                </div> -->
+
+                                <div class="py-1.5">
+                                    
+                                    <a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100 cursor-pointer" 
+                                    role="menuitem"
+                                    th:href="@{/dashboard}">Dashboard</a>
+
+                                    <form th:action="@{/logout}" method="post" data-turbo="false">
+                                        <input type="submit" 
+                                        class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100 cursor-pointer w-full text-left"  
+                                        role="menuitem"
+                                        value="Log out"/>
+                                    </form>
+
+                                </div>
+
+                            <!-- <div class="py-1.5" role="none">
+                                <a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100"
+                                    id="headlessui-menu-item-50" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/v1/components">Switch to v1</a>
+                                </div> -->
+                            <!-- <div class="py-1.5" role="none"><a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100"
+                                    id="headlessui-menu-item-51" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/upgrade-team">Upgrade to Team License</a>
+                                </div> -->
+                            <!-- <div class="py-1.5" role="none"><a class="block py-1.5 block px-3.5 py-1.5 hover:bg-slate-100"
+                                    id="headlessui-menu-item-52" role="menuitem" tabindex="-1" data-headlessui-state=""
+                                    href="/account-settings">Account Settings</a><button type="button"
+                                    class="block w-full py-1.5 text-left block w-full px-3.5 py-1.5 text-left hover:bg-slate-100"
+                                    id="headlessui-menu-item-53" role="menuitem" tabindex="-1" data-headlessui-state="">Sign out</button></div> -->
+                        </div>
+                    </div>
+
+            <!-- <div class="mt-3">
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" class="text-sm font-semibold leading-6 text-gray-900 mr-4" value="Log out"/>
+                </form>
+            </div> -->
+        </div>
+    </nav>
+</header>

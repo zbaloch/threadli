@@ -1,0 +1,96 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+  
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+
+      
+        <main class="py-10 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+            <div>
+              <nav  aria-label="Back">
+                <a th:href="@{/w/{worskpaceId}(worskpaceId=${workspace.id} )}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                  <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                  </svg>
+                  <span th:text="${workspace.name}">Back</span>
+                </a>
+              </nav>
+
+              <div class="mt-2 lg:flex lg:items-center lg:justify-between">
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    New thread
+                  </h2>
+                </div>
+              </div>
+            </div>
+            
+            <form method="POST" 
+                  th:action="@{/w/{workspaceId}/compose(workspaceId=${workspace.id} )}"
+                  x-data="{ title: '', content: '', isSubmitting: false }"
+                  x-on:submit.prevent="if (title.trim() && content.trim() && !isSubmitting) { isSubmitting = true; $el.submit(); }">
+              <div class="border-b border-gray-900/10 pb-12 mt-8">
+                <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div class="sm:col-span-6">
+                      <!-- <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Thread title</label> -->
+                    <div class="">
+                      <input type="text" name="title" id="title"
+                             placeholder="Thread title"
+                             x-model="title"
+                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6 ">
+                    </div>
+                  </div>
+
+                  
+
+                  <div class="col-span-full">
+                    <!-- <label for="about" class="block text-sm font-medium leading-6 text-gray-900">Post</label> -->
+                    <div class="">
+                      <input id="post" type="hidden" name="content" x-model="content">
+                      <trix-editor input="post" x-on:trix-change="content = $event.target.value" class="trix-editor"></trix-editor>
+                    </div>
+                  </div>
+
+                  
+      
+                </div>
+              </div>
+
+              <div class="mt-6 flex items-center justify-end gap-x-6">
+                <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
+                <button type="submit" 
+                        x-bind:disabled="!title.trim() || !content.trim() || isSubmitting"
+                        x-bind:class="{'opacity-50 cursor-not-allowed': !title.trim() || !content.trim() || isSubmitting, 'hover:bg-cyan-700': title.trim() && content.trim() && !isSubmitting}"
+                        class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
+                  <span x-text="isSubmitting ? 'Posting...' : 'Post'"></span>
+                </button>
+              </div>
+              
+            </form>
+            
+          </div>
+        </main>
+      </div>
+      
+      
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+
+        
+
+        /*]]>*/
+      
+      
+      </script>
+      
+      <div th:replace="~{fragments/javascript}"></div>
+      
+
+      
+    </body>
+</html>

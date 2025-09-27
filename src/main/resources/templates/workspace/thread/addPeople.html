@@ -1,0 +1,122 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+  
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+
+      
+        <main class="py-10 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+            <div>
+              <nav  aria-label="Back">
+                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                  <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Back to thread</span>
+                </a>
+              </nav>
+
+              <div class="mt-2 lg:flex lg:items-center lg:justify-between">
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    Add people to this thread...
+                  </h2>
+                </div>
+                
+              </div>
+            </div>
+            
+            
+   
+                
+            <div class="mt-8 flow-root">
+                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    
+                    <form th:action="@{/w/{workspaceId}/t/{threadId}/add-people(workspaceId=${workspace.id}, threadId=${thread.id})}" method="post"> <!-- Update the form action -->
+                        <table class="min-w-full divide-y divide-gray-300">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="relative px-7 sm:w-12 sm:px-6"></th>
+                                <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                        
+                        <!-- <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                            <span class="sr-only">Edit</span>
+                        </th> -->
+
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                        <tr th:each="member : ${workspace.memberships}" th:if="${member.user.id != user.id}">
+
+                            <td class="relative px-7 sm:w-12 sm:px-6">
+                                <!-- Selected row marker, only show when row is selected. -->
+                                <!-- <div class="absolute inset-y-0 left-0 w-0.5 bg-indigo-600"></div> -->
+              
+                                <input type="checkbox" 
+                                    id="memberCheckbox" 
+                                    name="memberIds" 
+                                    th:value="${member.user.id}" 
+                                    class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-cyan-600 focus:ring-cyan-600">
+                              </td>
+
+                        <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                            <div class="flex items-center">
+                            <div class="h-11 w-11 flex-shrink-0">
+                                <img class="h-11 w-11 rounded-full" 
+                                th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}"
+                                src="https://images.unsplash.com/photo-1517841905240-472988babdf9?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" 
+                                alt="">
+                            </div>
+                            <div class="ml-4">
+                                <div class="font-medium text-gray-900" th:text="${member.user.firstName + ' ' + member.user.lastName}">John Doe</div>
+                                <div class="mt-1 text-gray-500" th:text="${member.user.email}">john.doe@example.com</div>
+                            </div>
+                            </div>
+                        </td>
+                        
+                        <!-- <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit<span class="sr-only">, Lindsay Walton</span></a>
+                        </td> -->
+
+                        </tr>
+            
+                        <!-- More people... -->
+                    </tbody>
+                    </table>
+
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+                        <button type="submit" 
+                                
+                                class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
+                          <span>Save</span>
+                        </button>
+                      </div>
+
+                    </form>
+                </div>
+                </div>
+            </div>
+
+            
+          </div>
+        </main>
+
+      </div>
+      
+      
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+        /*]]>*/
+      </script>
+      
+      <div th:replace="~{fragments/javascript}"></div>
+      
+    </body>
+</html>

@@ -1,0 +1,67 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body>
+      <main class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-24">
+
+        <nav  aria-label="Back">
+          <a href="/" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+              <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+              </svg>
+              <span>Back</span>
+            </a>
+          </nav>
+
+        <div class="mt-8">
+          <div class="sm:flex sm:items-center">
+            <div class="sm:flex-auto">
+              <h1 class="text-base font-semibold leading-6 text-gray-900">Workspaces</h1>
+              <p class="mt-2 text-sm text-gray-700">
+                Here is your list of workspaces you have access to.
+              </p>
+            </div>
+            <!-- <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+              <button type="button" class="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add user</button>
+            </div> -->
+          </div>
+          <div class="mt-8 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+              <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                <table class="min-w-full divide-y divide-gray-300">
+                  <thead>
+                    <tr> 
+                      <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Workspace</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    <tr th:each="workspace : ${workspaces}">
+                      <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                        <a th:href="@{/w/{workspaceId}(workspaceId=${workspace.id})}" 
+                        class="hover:underline text-cyan-600"
+                        th:text="${workspace.name}"></a>
+                      </td>
+                    </tr>
+        
+                    <!-- More people... -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </body>
+</html>
+
+<script>
+  function submitForm() {
+    this.isSubmitting = true;
+    // Simulate form submission (replace with actual form submission logic)
+    setTimeout(() => {
+      document.querySelector('form').submit();
+    }, 1000);
+  }
+</script>

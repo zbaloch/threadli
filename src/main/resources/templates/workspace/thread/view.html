@@ -1,0 +1,247 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+
+      
+        <main class="py-10 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+            <div>
+              <nav  aria-label="Back">
+                <a th:href="@{/w/{worskpaceId}(worskpaceId=${workspace.id})}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                  <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                  </svg>
+                  <span>Back to Threads</span>
+                </a>
+              </nav>
+
+              <div class="mt-4 lg:flex lg:items-center lg:justify-between">
+                <div class="min-w-0 flex-1">
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight" th:text="${thread.title}">
+                    New thread
+                  </h2>
+                </div>
+
+                <div class="mt-5 flex lg:ml-4 lg:mt-0">
+                  <div class="flex -space-x-2 overflow-hidden">
+                    <img th:each="member, iterStat : ${memberships}"  
+                    class="inline-block h-10 w-10 rounded-full ring-2 ring-white" 
+                    th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}" 
+                    th:alt="${member.user.firstName + ' ' + member.user.lastName}">
+                  </div>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start" 
+                x-data="{open: false}">
+                  <!-- <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Open</span> -->
+                  <div class="relative ml-3 inline-block text-left">
+                    <div>
+                      <button x-on:click="open = !open"  type="button" class="-my-2 flex items-center rounded-full bg-white p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="menu-0-button" aria-expanded="false" aria-haspopup="true">
+                        <span class="sr-only">Open options</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
+                        </svg>
+                      </button>
+                    </div>
+            
+                    <!--
+                      Dropdown menu, show/hide based on menu state.
+            
+                      Entering: "transition ease-out duration-100"
+                        From: "transform opacity-0 scale-95"
+                        To: "transform opacity-100 scale-100"
+                      Leaving: "transition ease-in duration-75"
+                        From: "transform opacity-100 scale-100"
+                        To: "transform opacity-0 scale-95"
+                    -->
+                    <div class="absolute right-1 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-0-button" tabindex="-1"
+                    x-show="open" @click.outside="open = false">
+                      <div class="py-1" role="none">
+                        <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                        <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-0">
+                          <span>Edit</span>
+                        </a> -->
+                        <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-1">
+                          <span>Duplicate</span>
+                        </a> -->
+                        <!-- <button type="button" class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Archive</span>
+                        </button> -->
+                        <a th:href="@{/w/{workspaceId}/t/{threadId}/add-people(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Add people</span>
+                        </a>
+                        <a th:if="${thread.isPinned == false}" th:href="@{/w/{workspaceId}/t/{threadId}/pin(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Pin thread</span>
+                        </a>
+
+                        <a th:if="${thread.isPinned == true}" th:href="@{/w/{workspaceId}/t/{threadId}/unpin(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Unpin thread</span>
+                        </a>
+
+                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == false}" th:href="@{/w/{workspaceId}/t/{threadId}/close(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Close thread...</span>
+                        </a>
+
+                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == true}" th:href="@{/w/{workspaceId}/t/{threadId}/open(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Open thread...</span>
+                        </a>
+
+                        <a th:href="@{/w/{workspaceId}/t/{threadId}/delete(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                          class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                          <span>Delete thread</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+
+            <div class="mx-auto max-w-none mt-4" th:each="post, iterStat : ${thread.posts}">
+              <div class="overflow-hidden bg-white">
+
+                <div class="bg-white py-4">
+                  <div class="flex space-x-3">
+                    <div class="flex-shrink-0">
+                      <img class="h-10 w-10 rounded-full" 
+                      th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + post.createdBy.firstName + ' ' + post.createdBy.lastName}" 
+                      th:alt="${post.createdBy.firstName + ' ' + post.createdBy.lastName}">
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="text-sm font-semibold text-gray-900">
+                        <span th:text="${post.createdBy.firstName + ' ' + post.createdBy.lastName}">John Doe</span>
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        <span th:text="${#dates.format(post.createdAt, 'MMMM d, hh:mm a')}">December 9 at 11:43 AM</span>
+                      </p>
+                    </div>
+                    <div class="flex flex-shrink-0 self-center">
+
+                      <div th:if="${iterStat.index > 0 && post.createdBy.id == user.id}" class="mt-4 flex items-center justify-between sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start" x-data="{open: false}">
+                        <!-- <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Open</span> -->
+                        <div class="relative ml-3 inline-block text-left">
+                          <div>
+                            <button x-on:click="open = !open"  type="button" class="-my-2 flex items-center rounded-full bg-white p-2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" id="menu-0-button" aria-expanded="false" aria-haspopup="true">
+                              <span class="sr-only">Open options</span>
+                              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z" />
+                              </svg>
+                            </button>
+                          </div>
+                  
+                          <!--
+                            Dropdown menu, show/hide based on menu state.
+                  
+                            Entering: "transition ease-out duration-100"
+                              From: "transform opacity-0 scale-95"
+                              To: "transform opacity-100 scale-100"
+                            Leaving: "transition ease-in duration-75"
+                              From: "transform opacity-100 scale-100"
+                              To: "transform opacity-0 scale-95"
+                          -->
+                          <div class="absolute right-1 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-0-button" tabindex="-1"
+                          x-show="open" @click.outside="open = false">
+                            <div class="py-1" role="none">
+                              <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
+                              <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-0">
+                                <span>Edit</span>
+                              </a> -->
+                              <!-- <a href="#" class="flex justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-1">
+                                <span>Duplicate</span>
+                              </a> -->
+                              <!-- <button type="button" class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                                <span>Archive</span>
+                              </button> -->
+                              <a th:href="@{/w/{workspaceId}/t/{threadId}/p/{postId}/delete(workspaceId=${workspace.id}, threadId=${thread.id}, postId=${post.id})}"
+                                class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
+                                <span>Delete</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- <div x-data="Components.menu({ open: false })" x-init="init()" @keydown.escape.stop="open = false; focusButton()" @click.away="onClickAway($event)" class="relative inline-block text-left">
+                      </div> -->
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="pb-5 sm:py-4 sm:pt-0 text-sm text-gray-900 trix-editor" 
+                  th:utext="${post.content}">
+                </div>
+              </div>
+            </div>
+            
+            <form method="POST" 
+            th:action="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}"
+            x-data="{ content: '', isSubmitting: false }"
+            x-on:submit.prevent="if (content.trim() && !isSubmitting) { isSubmitting = true; $el.submit(); }"
+            >
+              <div class="border-b border-gray-900/10 pb-12 mt-8">
+                <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+  
+                  <div class="col-span-full">
+                    <div class="">
+                      <input id="post" type="hidden" name="content" x-model="content">
+                      <trix-editor input="post" x-on:trix-change="content = $event.target.value" class="trix-editor"></trix-editor>
+                    </div>
+                  </div>
+        
+                </div>
+              </div>
+  
+              <div class="mt-6 flex items-center justify-end gap-x-6">
+                <button type="button" class="text-sm font-semibold leading-6 text-gray-900">Discard</button>
+                <button type="submit" 
+                        x-bind:disabled="!content.trim() || isSubmitting"
+                        x-bind:class="{'opacity-50 cursor-not-allowed': !content.trim() || isSubmitting}"
+                        class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
+                  <span x-text="isSubmitting ? 'Posting...' : 'Post'"></span>
+                </button>
+              </div>
+            </form>
+
+
+          </div>
+        </main>
+      </div>
+      
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+        /*]]>*/
+      
+        console.log("workspaceId: ", workspaceId);
+      
+      
+      </script>
+      
+      
+      
+      <script th:inline="javascript">
+        /*<![CDATA[*/
+        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+        /*]]>*/
+      
+        console.log("workspaceId: ", workspaceId);
+      
+      </script>
+      
+      <div th:replace="~{fragments/javascript}"></div>
+    
+      
+
+    </body>
+</html>

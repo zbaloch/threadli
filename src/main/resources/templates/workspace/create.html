@@ -1,0 +1,19 @@
+<html>
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+        <div>
+          <div th:replace="~{fragments/sidebar}"></div>
+        
+          <main class="py-10 lg:pl-72">
+            <div class="px-4 sm:px-6 lg:px-8">
+              <!-- Your content -->
+            </div>
+          </main>
+        </div>
+
+        <div th:replace="~{fragments/javascript}"></div>
+        
+      </body>
+</html>

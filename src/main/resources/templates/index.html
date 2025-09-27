@@ -1,0 +1,58 @@
+<html>
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body>
+      <div th:replace="~{fragments/top-banner}"></div>
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div th:replace="~{fragments/navbar}"></div>
+        
+          <div class="md:flex md:items-center md:justify-between mt-8">
+            <div class="min-w-0 flex-1">
+              <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Threadli 
+              </h1>
+              <h2 class="text-xl text-gray-500 mt-1">
+                Work communication that won’t distract you all day. Work async, not ASAP.
+              </h2>
+              <h2 class="text-xl text-gray-500 mt-1">
+                Alternative to email (Outlook, Gmail, etc.), Slack, Teams and other distracting communication channels.
+              </h2>
+            </div>
+
+            <!-- <div class="mt-4 flex md:ml-4 md:mt-0" sec:authorize="isAuthenticated()">
+              <button type="button" class="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Add new product</button>
+              <button type="button" class="ml-3 inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                Add new product
+              </button>
+            </div> -->
+          </div>
+
+          <div class="mt-10 flex items-center gap-x-6">
+            <a href="/signup" class="rounded-md bg-cyan-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+              Sign up
+            </a>
+            <a href="/login" class="text-sm font-semibold leading-6 text-gray-900">
+              Log in
+            </a>
+          </div>
+
+          <div sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post" class="flex items-center">
+              <button type="submit" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">
+                  Logout
+              </button>
+            </form>
+          </div>
+
+          <div class="mt-16 flow-root sm:mt-24">
+            <div class="">
+              <img src="/assets/images/threadli-mockup.png" alt="App screenshot" width="2432" height="1442" class="rounded-md shadow-2xl ring-1 ring-gray-900/10">
+            </div>
+          </div>
+
+        </div>
+        <div th:replace="~{fragments/footer}"></div>
+      </div>
+    </body>
+</html>
