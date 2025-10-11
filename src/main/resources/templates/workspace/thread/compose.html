@@ -31,8 +31,67 @@
             
             <form method="POST" 
                   th:action="@{/w/{workspaceId}/compose(workspaceId=${workspace.id} )}"
-                  x-data="{ title: '', content: '', isSubmitting: false }"
+                  x-data="{ 
+                    title: '', 
+                    content: '', 
+                    isSubmitting: false,
+                    // People selector state
+                    searchQuery: '',
+                    selectedPeople: [],
+                    availablePeople: [],
+                    showDropdown: false,
+                    filteredPeople: [],
+                    
+                    async init() {
+                      // Fetch workspace members
+                      try {
+                        const response = await fetch(`/api/w/${workspaceId}/members`);
+                        if (response.ok) {
+                          this.availablePeople = await response.json();
+                          this.filteredPeople = this.availablePeople;
+                        }
+                      } catch (error) {
+                        console.error('Failed to fetch members:', error);
+                      }
+                    },
+                    
+                    filterPeople() {
+                      if (this.searchQuery.trim() === '') {
+                        this.filteredPeople = this.availablePeople.filter(person => 
+                          !this.selectedPeople.find(selected => selected.id === person.id)
+                        );
+                      } else {
+                        this.filteredPeople = this.availablePeople.filter(person => 
+                          person.name.toLowerCase().includes(this.searchQuery.toLowerCase()) &&
+                          !this.selectedPeople.find(selected => selected.id === person.id)
+                        );
+                      }
+                      this.showDropdown = this.filteredPeople.length > 0;
+                    },
+                    
+                    selectPerson(person) {
+                      this.selectedPeople.push(person);
+                      this.searchQuery = '';
+                      this.showDropdown = false;
+                      this.filterPeople();
+                    },
+                    
+                    removePerson(personId) {
+                      this.selectedPeople = this.selectedPeople.filter(person => person.id !== personId);
+                      this.filterPeople();
+                    },
+                    
+                    focusSearch() {
+                      this.filterPeople();
+                      this.showDropdown = this.filteredPeople.length > 0;
+                    }
+                  }"
                   x-on:submit.prevent="if (title.trim() && content.trim() && !isSubmitting) { isSubmitting = true; $el.submit(); }">
+              
+              <!-- Hidden inputs for selected people -->
+              <template x-for="person in selectedPeople" :key="person.id">
+                <input type="hidden" name="selectedMembers" :value="person.id">
+              </template>
               <div class="border-b border-gray-900/10 pb-12 mt-8">
                 <div class="mt-2 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                   <div class="sm:col-span-6">
@@ -42,6 +101,65 @@
                              placeholder="Thread title"
                              x-model="title"
                              class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6 ">
+                    </div>
+                  </div>
+
+                  <!-- People Selection Field -->
+                  <div class="sm:col-span-6">
+                    <label for="people-search" class="block text-sm font-medium leading-6 text-gray-900 mb-2">Add people to this thread</label>
+                    
+                    <!-- Selected people display -->
+                    <div x-show="selectedPeople.length > 0" class="mb-3">
+                      <div class="flex flex-wrap gap-2">
+                        <template x-for="person in selectedPeople" :key="person.id">
+                          <div class="inline-flex items-center gap-1 bg-cyan-100 text-cyan-800 text-xs font-medium px-2.5 py-1 rounded-full">
+                            <img :src="person.avatar" :alt="person.name" class="w-4 h-4 rounded-full">
+                            <span x-text="person.name"></span>
+                            <button type="button" 
+                                    @click="removePerson(person.id)"
+                                    class="ml-1 text-cyan-600 hover:text-cyan-800">
+                              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                              </svg>
+                            </button>
+                          </div>
+                        </template>
+                      </div>
+                    </div>
+                    
+                    <!-- Search input with dropdown -->
+                    <div class="relative">
+                      <input type="text" 
+                             id="people-search"
+                             placeholder="Search people to add..."
+                             x-model="searchQuery"
+                             @input="filterPeople()"
+                             @focus="focusSearch()"
+                             @blur="setTimeout(() => showDropdown = false, 200)"
+                             class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6">
+                      
+                      <!-- Dropdown -->
+                      <div x-show="showDropdown && filteredPeople.length > 0" 
+                           x-transition:enter="transition ease-out duration-100"
+                           x-transition:enter-start="transform opacity-0 scale-95"
+                           x-transition:enter-end="transform opacity-100 scale-100"
+                           x-transition:leave="transition ease-in duration-75"
+                           x-transition:leave-start="transform opacity-100 scale-100"
+                           x-transition:leave-end="transform opacity-0 scale-95"
+                           class="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                        <template x-for="person in filteredPeople" :key="person.id">
+                          <div @click="selectPerson(person)" 
+                               class="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-cyan-50">
+                            <div class="flex items-center">
+                              <img :src="person.avatar" :alt="person.name" class="h-6 w-6 rounded-full flex-shrink-0">
+                              <div class="ml-3">
+                                <span class="font-medium block truncate" x-text="person.name"></span>
+                                <span class="text-gray-500 text-xs" x-text="person.email"></span>
+                              </div>
+                            </div>
+                          </div>
+                        </template>
+                      </div>
                     </div>
                   </div>
 

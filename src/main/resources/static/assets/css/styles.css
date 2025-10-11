@@ -2,6 +2,8 @@
     display: none; 
 } */
 
+/* Alpine.js x-cloak directive to prevent flash of unstyled content */
+[x-cloak] { display: none !important; }
 
 .trix-editor {
     @apply w-full;
