@@ -59,6 +59,18 @@ public class ThreadController {
     @Autowired
     private ThreadMembershipRepository threadMembershipRepository;
     
+    /**
+     * Security helper method to verify if a user is a member of a specific thread
+     * @param threadId The thread ID to check
+     * @param userId The user ID to verify
+     * @return true if user is a member, false otherwise
+     */
+    private boolean isUserThreadMember(Long threadId, Long userId) {
+        List<ThreadMembership> memberships = threadMembershipRepository.findByThreadId(threadId);
+        return memberships.stream()
+            .anyMatch(membership -> membership.getUser().getId().equals(userId));
+    }
+    
 
     @GetMapping("/w/{workspaceId}/compose")
     public String accessWorkspace(@PathVariable Long workspaceId, 
@@ -161,6 +173,11 @@ public class ThreadController {
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
 
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+
         model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
@@ -192,6 +209,11 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
         
         if(memberIds != null && memberIds.size() > 0)  {
             
@@ -238,6 +260,12 @@ public class ThreadController {
             User user = userRepository.findByEmail(principal.getName());
             Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
             com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+            
+            // SECURITY CHECK: Verify user is a member of this thread
+            if (!isUserThreadMember(threadId, user.getId())) {
+                return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            }
+            
             Post post = postRepository.findByCreatedByAndId(user, postId).get();
             postRepository.delete(post);
             return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
@@ -254,8 +282,15 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         Thread thread = threadRepository.findByWorkspaceIdAndId(workspaceId, threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            // User is not a member of this thread - redirect with error message
+            redirectAttributes.addFlashAttribute("error", "You don't have access to this thread.");
+            return "redirect:/w/" + workspaceId;
+        }
+        
         List<ThreadMembership> memberships = threadMembershipRepository.findByThreadId(thread.getId());
-        log.info("memberships.size() " + memberships.size());
         for(ThreadMembership membership : memberships) {
             log.info("" + membership.getUser().getId());
             log.info("" + membership.getThread().getId());
@@ -295,6 +330,12 @@ public class ThreadController {
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
 
+        // SECURITY CHECK: Verify user is a member of this thread before allowing posts
+        if (!isUserThreadMember(threadId, user.getId())) {
+            // User is not a member of this thread - redirect with error message
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+
         thread.getMemberships().forEach(membership -> {
             if(membership.getUser().getId() != user.getId()) {
                 membership.setCaughtUp(false);
@@ -331,6 +372,13 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Only thread creator or workspace admin can delete threads
+        // But first verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+        
         threadRepository.delete(thread);
         
         return "redirect:/w/" + workspace.getId();
@@ -345,6 +393,12 @@ public class ThreadController {
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
 
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+        
         thread.setPinned(true);
         threadRepository.save(thread);
         
@@ -359,6 +413,12 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+        
         thread.setPinned(false);
         threadRepository.save(thread);
         
@@ -374,6 +434,11 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
         thread.setClosed(true);
         threadRepository.save(thread);
         
@@ -388,6 +453,12 @@ public class ThreadController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+        }
+        
         thread.setClosed(false);
         threadRepository.save(thread);
         
