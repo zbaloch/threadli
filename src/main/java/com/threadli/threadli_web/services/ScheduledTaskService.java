@@ -39,25 +39,12 @@ public class ScheduledTaskService {
     @Autowired
     private EmailService emailService;
 
-    /**
-     * Scheduled task that runs every minute
-     * Using cron expression: "0 * * * * *" means run at the start of every minute
-     */
-    @Scheduled(cron = "0 * * * * *")
-    @org.springframework.context.event.EventListener(org.springframework.boot.context.event.ApplicationReadyEvent.class)
-    public void performMinuteTask() {
-        log.info("Minute scheduled task executed at {}", dateTimeFormatter.format(LocalDateTime.now()));
-        
-        try {
-            sendScheduledNotifications();
-        } catch (Exception e) {
-            log.error("Error executing minute task", e);
-        }
-    }
 
     /**
      * Example: Send scheduled notifications
      */
+    @Scheduled(cron = "0 0 */2 * * *")
+    @org.springframework.context.event.EventListener(org.springframework.boot.context.event.ApplicationReadyEvent.class)
     private void sendScheduledNotifications() {
         log.info("Processing scheduled notifications...");
 
