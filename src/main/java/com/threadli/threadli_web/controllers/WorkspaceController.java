@@ -69,15 +69,9 @@ public class WorkspaceController {
         User user = userRepository.findByEmail(principal.getName());
         Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
-        log.info("isAdmin " + isAdmin);
-
-        // Get the threads in this workspace where the current user is a member.
-        log.info("User ID " + user.getId());
-        log.info("Workspaace Id " + workspaceId);
-
+       
         // List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
         List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdOrderByUpdatedAtDesc(workspaceId, user.getId());
-        log.info("userThreads.size() " + userThreads.size());
         
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
@@ -103,7 +97,6 @@ public class WorkspaceController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to access this workspace settings");
             return "redirect:/w/{workspaceId}";
         }
-        log.info("workspace " + workspaceId);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         // If the user can access the workspace, continue with the workspace vieww
@@ -126,7 +119,6 @@ public class WorkspaceController {
         }
         workspace.setName(name);
         workspaceRepository.save(workspace);
-        log.info("workspace " + workspaceId);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         // If the user can access the workspace, continue with the workspace vieww
@@ -148,8 +140,8 @@ public class WorkspaceController {
         } else {
             model.addAttribute("isAdmin", true);
         }
-            log.info("workspace " + workspaceId);
-            model.addAttribute("user", user);
+            
+        model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         // If the user can access the workspace, continue with the workspace vieww
         return "workspace/settings/members";
@@ -173,7 +165,6 @@ public class WorkspaceController {
             redirectAttributes.addFlashAttribute("error", "You are not authorized to access this workspace members");
             return "redirect:/w/{workspaceId}";
         }
-        log.info("workspace " + workspaceId);
         User newMember = userRepository.findByEmail(email);
 
         String token = generateToken();
