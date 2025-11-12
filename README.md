@@ -55,12 +55,19 @@ export threadli_mail_port=587
 export threadli_server_port=8080
 ```
 
+### How to run the jar file
+
+```
+java -jar threadli.jar
+```
+
 
 ### How to run Docker image
 
+```
 mvn package
 
 docker image build -t threadli:latest .
 
 docker run threadli:latest
-
+```
