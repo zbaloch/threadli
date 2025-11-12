@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.threadli</groupId>
 	<artifactId>threadli-web</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<name>threadli-web</name>
 	<description>Threadli Web App</description>
 	<url/>
@@ -130,6 +130,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>threadli-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
