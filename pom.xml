@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.threadli</groupId>
 	<artifactId>threadli-web</artifactId>
-	<version>0.0.3</version>
+	<version>0.0.5</version>
 	<name>threadli-web</name>
 	<description>Threadli Web App</description>
 	<url/>
