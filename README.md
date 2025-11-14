@@ -33,6 +33,7 @@ export threadli_host_url=https://team.com
 export threadli_db_driver=com.mysql.cj.jdbc.Driver
 export threadli_db_dialect=org.hibernate.dialect.MySQL8Dialect
 export threadli_mail_port=587
+export threadli_context_path=/
 ```
 
 Warning: File uploads do not work when using SQLite.
@@ -53,6 +54,7 @@ export threadli_mail_password=password
 export threadli_host_url=https://team.com
 export threadli_mail_port=587
 export threadli_server_port=8080
+export threadli_context_path=/
 ```
 
 ### How to run the jar file

@@ -43,7 +43,7 @@ public class ScheduledTaskService {
     /**
      * Example: Send scheduled notifications
      */
-    @Scheduled(cron = "0 0 */2 * * *")
+    @Scheduled(cron = "0 0 6-18/2 * * *")
     @org.springframework.context.event.EventListener(org.springframework.boot.context.event.ApplicationReadyEvent.class)
     private void sendScheduledNotifications() {
         log.info("Processing scheduled notifications...");

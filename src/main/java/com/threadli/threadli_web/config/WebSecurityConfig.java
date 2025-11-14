@@ -49,6 +49,7 @@ public class WebSecurityConfig {
 			.authorizeHttpRequests((requests) -> requests
 				.requestMatchers("/", "/home", "/signup", "/forgot-password", 
 				"/w/create-team",
+				"/threadli/**",
 				"/create-user", "/login", "/favicon.ico", "/assets/**",
 				"/api/webhook",
 				"/create-user-magic", "/login-magic", "create-user-or-login-magic",
