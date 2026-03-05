@@ -71,7 +71,7 @@ public class WorkspaceController {
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
        
         // List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
-        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdOrderByUpdatedAtDesc(workspaceId, user.getId());
+        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
         
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);

@@ -14,12 +14,18 @@ public interface ThreadRepository extends JpaRepository<Thread, Long> {
     // Custom query methods can be added here if needed
     List<Thread> findByWorkspaceId(Long workspaceId);
 
-    // Find by channel id and thread id 
+    // Find by channel id and thread id
     Optional<Thread> findByWorkspaceIdAndId(Long workspaceId, Long threadId);
 
     List<Thread> findByWorkspaceIdAndMemberships_User_Id(Long workspaceId, Long userId);
 
     List<Thread> findByWorkspaceIdAndMemberships_User_IdOrderByUpdatedAtDesc(Long workspaceId, Long userId);
+
+    // Excludes soft-deleted threads - use this everywhere threads are listed
+    List<Thread> findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(Long workspaceId, Long userId);
+
+    // Excludes soft-deleted threads - use for single thread lookup
+    Optional<Thread> findByWorkspaceIdAndIdAndIsDeletedFalse(Long workspaceId, Long threadId);
 
 
 }

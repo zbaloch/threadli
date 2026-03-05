@@ -57,6 +57,22 @@ public class Thread {
     // Thread can only be cloased by who created it
     private boolean isClosed = false;
 
+    // Closure audit
+    private Instant closedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "closed_by")
+    private User closedBy;
+
+    // Soft delete
+    private boolean isDeleted = false;
+
+    private Instant deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    private User deletedBy;
+
     @OneToMany(mappedBy = "thread", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ThreadMembership> memberships = new HashSet<>();
 
