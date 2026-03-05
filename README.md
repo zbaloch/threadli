@@ -12,7 +12,7 @@ Key features of Threadli include:
 
 # CE Dual License
 
-RiskRegisterHQ is source-available under a Fair Use license. Available to companies with under $5M in revenue — it is not an Apache 2 open source product. If your company revenue is $5M a year then please purchase a license for usage. RiskRegisterHQ is a risk register & compliance platform. Manage risks, controls, and compliance in one platform. Support for ISO 27001, NIS2, and more.
+Threadli is source-available under a Fair Use license. Available to companies with under $5M in revenue — it is not an Apache 2 open source product. If your company revenue is $5M a year then please purchase a license for usage.
 
 
 
