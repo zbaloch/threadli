@@ -236,7 +236,7 @@
                         <span th:text="${post.createdBy.firstName + ' ' + post.createdBy.lastName}">John Doe</span>
                       </p>
                       <p class="text-sm text-gray-500">
-                        <span th:text="${#dates.format(post.createdAt, 'MMMM d, hh:mm a')}">December 9 at 11:43 AM</span>
+                        <span th:text="${#dates.format(post.createdAt, 'MMMM d, h:mm a')}">December 9 at 11:43 AM</span>
                       </p>
                     </div>
                     <div class="flex flex-shrink-0 self-center">

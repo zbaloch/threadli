@@ -152,7 +152,7 @@
                           <div>
                             <span class="text-sm text-gray-500" 
                           th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, hh:mm a') : 'No posts yet'}">Date not available</span>
+                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
                         
                           </div>
                           
@@ -206,7 +206,7 @@
                           </p>
                           <span class="text-sm text-gray-500" 
                           th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, hh:mm a') : 'No posts yet'}">Date not available</span>
+                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
                         </div>
                         
                         <div class="text-sm text-gray-500 inline-content inline-content line-clamp-2" th:if="${!thread.posts.empty}">
@@ -257,7 +257,7 @@
                           </p>
                           <span class="text-sm text-gray-500" 
                           th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, hh:mm a') : 'No posts yet'}">Date not available</span>
+                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
                         </div>
                         
                         <div class="text-sm text-gray-500 inline-content inline-content line-clamp-2" th:if="${!thread.posts.empty}">
