@@ -81,34 +81,43 @@
                           <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                         </div>
                         <div class="min-w-0 flex-1">
-                          <!-- Header: Author Name, Date, Comments (Basecamp style) -->
-                          <div class="flex justify-between items-baseline gap-2 mb-1">
-                            <div class="flex items-baseline gap-2 min-w-0">
-                              <span class="text-sm font-semibold text-gray-900" th:text="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}"></span>
-                              <span class="text-xs text-gray-400 whitespace-nowrap" th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
-                            </div>
-
-                            <div class="flex-shrink-0">
-                              <span th:each="mem: ${thread.memberships}"
-                                th:if="${mem.user.id == user.id}"
-                                class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
-                                <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
-                                <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
-                                  <circle cx="3" cy="3" r="3" />
-                                </svg>
-                              </span>
-                            </div>
+                          <!-- Row 1: Title and Comment Count -->
+                        <div class="flex justify-between items-center gap-2">
+                          <div class="flex-1 flex items-center gap-2 min-h-[1.5rem] overflow-hidden">
+                            <span class="text-sm font-semibold text-gray-900 truncate" th:text="${thread.title}"></span>
                           </div>
 
-                          <!-- Thread Title -->
-                          <div class="text-sm font-semibold text-gray-900 mb-2" th:text="${thread.title}"></div>
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                              <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
+                                <circle cx="3" cy="3" r="3" />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
 
-                          <!-- Last Post Preview (if exists) -->
-                          <div class="text-sm text-gray-600 line-clamp-2" th:if="${!thread.posts.empty}">
+                        <!-- Row 2: Thread Creation Date -->
+                        <div class="text-xs text-gray-400 mt-1">
+                          <span th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
+                        </div>
+
+                        <!-- Row 3: Last Post Preview with Date -->
+                        <div class="flex justify-between items-baseline gap-2 mt-2" th:if="${!thread.posts.empty}">
+                          <div class="text-sm text-gray-500 inline-content line-clamp-2 flex-1 min-w-0">
+                            <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                                  th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName + ': '}"></span>
                             <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:utext="${lastPost.content}"></span>
                           </div>
-                          <div class="text-sm text-gray-500" th:if="${thread.posts.empty}">
+                          <span class="text-xs text-gray-400 whitespace-nowrap flex-shrink-0"
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                          </span>
+                        </div>
+                          <div class="text-sm text-gray-500 mt-2" th:if="${thread.posts.empty}">
                             No posts in this thread yet.
                           </div>
                         </div>
@@ -140,34 +149,43 @@
                           <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                         </div>
                         <div class="min-w-0 flex-1">
-                          <!-- Header: Author Name, Date, Comments (Basecamp style) -->
-                          <div class="flex justify-between items-baseline gap-2 mb-1">
-                            <div class="flex items-baseline gap-2 min-w-0">
-                              <span class="text-sm font-semibold text-gray-900" th:text="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}"></span>
-                              <span class="text-xs text-gray-400 whitespace-nowrap" th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
-                            </div>
-
-                            <div class="flex-shrink-0">
-                              <span th:each="mem: ${thread.memberships}"
-                                th:if="${mem.user.id == user.id}"
-                                class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
-                                <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
-                                <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
-                                  <circle cx="3" cy="3" r="3" />
-                                </svg>
-                              </span>
-                            </div>
+                          <!-- Row 1: Title and Comment Count -->
+                        <div class="flex justify-between items-center gap-2">
+                          <div class="flex-1 flex items-center gap-2 min-h-[1.5rem] overflow-hidden">
+                            <span class="text-sm font-semibold text-gray-900 truncate" th:text="${thread.title}"></span>
                           </div>
 
-                          <!-- Thread Title -->
-                          <div class="text-sm font-semibold text-gray-900 mb-2" th:text="${thread.title}"></div>
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                              <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
+                                <circle cx="3" cy="3" r="3" />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
 
-                          <!-- Last Post Preview (if exists) -->
-                          <div class="text-sm text-gray-600 line-clamp-2" th:if="${!thread.posts.empty}">
+                        <!-- Row 2: Thread Creation Date -->
+                        <div class="text-xs text-gray-400 mt-1">
+                          <span th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
+                        </div>
+
+                        <!-- Row 3: Last Post Preview with Date -->
+                        <div class="flex justify-between items-baseline gap-2 mt-2" th:if="${!thread.posts.empty}">
+                          <div class="text-sm text-gray-500 inline-content line-clamp-2 flex-1 min-w-0">
+                            <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                                  th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName + ': '}"></span>
                             <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:utext="${lastPost.content}"></span>
                           </div>
-                          <div class="text-sm text-gray-500" th:if="${thread.posts.empty}">
+                          <span class="text-xs text-gray-400 whitespace-nowrap flex-shrink-0"
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                          </span>
+                        </div>
+                          <div class="text-sm text-gray-500 mt-2" th:if="${thread.posts.empty}">
                             No posts in this thread yet.
                           </div>
                         </div>
@@ -199,34 +217,43 @@
                           <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                         </div>
                         <div class="min-w-0 flex-1">
-                          <!-- Header: Author Name, Date, Comments (Basecamp style) -->
-                          <div class="flex justify-between items-baseline gap-2 mb-1">
-                            <div class="flex items-baseline gap-2 min-w-0">
-                              <span class="text-sm font-semibold text-gray-900" th:text="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}"></span>
-                              <span class="text-xs text-gray-400 whitespace-nowrap" th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
-                            </div>
-
-                            <div class="flex-shrink-0">
-                              <span th:each="mem: ${thread.memberships}"
-                                th:if="${mem.user.id == user.id}"
-                                class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
-                                <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
-                                <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
-                                  <circle cx="3" cy="3" r="3" />
-                                </svg>
-                              </span>
-                            </div>
+                          <!-- Row 1: Title and Comment Count -->
+                        <div class="flex justify-between items-center gap-2">
+                          <div class="flex-1 flex items-center gap-2 min-h-[1.5rem] overflow-hidden">
+                            <span class="text-sm font-semibold text-gray-900 truncate" th:text="${thread.title}"></span>
                           </div>
 
-                          <!-- Thread Title -->
-                          <div class="text-sm font-semibold text-gray-900 mb-2" th:text="${thread.title}"></div>
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              class="relative inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                              <svg th:if="${!mem.caughtUp}" class="h-2 w-2 text-red-600 fill-current absolute -top-1 -right-1" viewBox="0 0 6 6" aria-hidden="true">
+                                <circle cx="3" cy="3" r="3" />
+                              </svg>
+                            </span>
+                          </div>
+                        </div>
 
-                          <!-- Last Post Preview (if exists) -->
-                          <div class="text-sm text-gray-600 line-clamp-2" th:if="${!thread.posts.empty}">
+                        <!-- Row 2: Thread Creation Date -->
+                        <div class="text-xs text-gray-400 mt-1">
+                          <span th:text="${#dates.format(thread.createdAt, 'MMM d, h:mm a')}"></span>
+                        </div>
+
+                        <!-- Row 3: Last Post Preview with Date -->
+                        <div class="flex justify-between items-baseline gap-2 mt-2" th:if="${!thread.posts.empty}">
+                          <div class="text-sm text-gray-500 inline-content line-clamp-2 flex-1 min-w-0">
+                            <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                                  th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName + ': '}"></span>
                             <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:utext="${lastPost.content}"></span>
                           </div>
-                          <div class="text-sm text-gray-500" th:if="${thread.posts.empty}">
+                          <span class="text-xs text-gray-400 whitespace-nowrap flex-shrink-0"
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
+                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                          </span>
+                        </div>
+                          <div class="text-sm text-gray-500 mt-2" th:if="${thread.posts.empty}">
                             No posts in this thread yet.
                           </div>
                         </div>
