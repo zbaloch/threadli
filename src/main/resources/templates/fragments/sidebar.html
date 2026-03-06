@@ -264,7 +264,9 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
       </svg>
     </button>
-    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">Threadli</div>
+    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">
+      <a href="/">Threadli</a>
+    </div>
     <a href="/profile/edit">
       <span class="sr-only">Your profile</span>
       <img class="h-8 w-8 rounded-full bg-gray-50" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + user.firstName + ' ' + user.lastName}" th:alt="${user.firstName + ' ' + user.lastName}">
