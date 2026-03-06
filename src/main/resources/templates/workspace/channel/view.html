@@ -28,7 +28,7 @@
                 </div>
                 <div class="mt-5 flex lg:ml-4 lg:mt-0">
                   <span class="sm:ml-3">
-                    <a th:href="@{/w/{workspaceId}/compose(workspaceId=${workspace.id}, channel=${channel.name})}"
+                    <a th:href="@{/compose(channel=${channel.name})}"
                       class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                       <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -46,7 +46,7 @@
               <h3 class="mt-2 text-sm font-semibold text-gray-900">No threads in #<span th:text="${channel.name}"></span></h3>
               <p class="mt-1 text-sm text-gray-500">Be the first to start a conversation in this channel!</p>
               <div class="mt-6">
-                <a th:href="@{/w/{workspaceId}/compose(workspaceId=${workspace.id}, channel=${channel.name})}"
+                <a th:href="@{/compose(channel=${channel.name})}"
                   class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                   <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
@@ -61,7 +61,7 @@
 
               <!-- Pinned threads -->
               <div class="mx-auto max-w-none" th:each="thread : ${threads}" th:if="${thread.pinned == true}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
                       <div class="flex space-x-3">
@@ -126,7 +126,7 @@
 
               <!-- Open (not closed) threads -->
               <div class="mx-auto max-w-none" th:each="thread : ${threads}" th:if="${thread.pinned == false && thread.isClosed == false}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
                       <div class="flex space-x-3">
@@ -191,7 +191,7 @@
 
               <!-- Closed threads -->
               <div class="mx-auto max-w-none" th:each="thread : ${threads}" th:if="${thread.pinned == false && thread.isClosed == true}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                     <div class="px-4 py-5 sm:px-6">
                       <div class="flex space-x-3">

@@ -1,0 +1,105 @@
+<html class="h-full bg-white">
+    <head>
+        <div th:replace="~{fragments/head}"></div>
+    </head>
+    <body class="h-full" x-data="{ isSidebarOpen: false }">
+      <div>
+        <div th:replace="~{fragments/sidebar}"></div>
+
+        <main class="py-8 lg:pl-72">
+          <div class="px-4 sm:px-6 lg:px-8">
+
+            <!-- Header -->
+            <div class="border-b border-gray-200 pb-5">
+              <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Settings & Members
+              </h2>
+              <p class="mt-1 text-sm text-gray-500">Manage application members and send invitations.</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${successMessage}" class="mt-4 rounded-md bg-green-50 p-4">
+              <div class="flex">
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-green-800" th:text="${successMessage}"></h3>
+                </div>
+              </div>
+            </div>
+
+            <div th:if="${error}" class="mt-4 rounded-md bg-red-50 p-4">
+              <div class="flex">
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-red-800" th:text="${error}"></h3>
+                </div>
+              </div>
+            </div>
+
+            <!-- Members List -->
+            <div class="mt-8 flow-root">
+              <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-4">Members</h3>
+                  <table class="min-w-full divide-y divide-gray-300">
+                    <thead>
+                      <tr>
+                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">Name</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Email</th>
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Role</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 bg-white">
+                      <tr th:each="member: ${users}">
+                        <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                          <div class="flex items-center">
+                            <div class="h-11 w-11 flex-shrink-0">
+                              <img class="h-11 w-11 rounded-full"
+                              th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.firstName + ' ' + member.lastName}"
+                              th:alt="${member.firstName + ' ' + member.lastName}">
+                            </div>
+                            <div class="ml-4">
+                              <div class="font-medium text-gray-900" th:text="${member.firstName + ' ' + member.lastName}"></div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="px-3 py-5 text-sm text-gray-500" th:text="${member.email}"></td>
+                        <td class="px-3 py-5 text-sm text-gray-500">
+                          <span th:if="${member.isAdmin}" class="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">Admin</span>
+                          <span th:unless="${member.isAdmin}" class="inline-flex items-center rounded-full bg-gray-50 px-2 py-1 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-700/10">Member</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Invite Form -->
+            <div class="mt-10 max-w-md">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Invite Member</h3>
+              <form th:action="@{/settings/members}" method="post" class="space-y-6">
+                <div>
+                  <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
+                  <div class="mt-2">
+                    <input type="email" name="email" id="email" required
+                      class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cyan-600 sm:text-sm sm:leading-6"
+                      placeholder="member@example.com">
+                  </div>
+                  <p class="mt-2 text-xs text-gray-500">A magic link will be sent to this email for signup or login.</p>
+                </div>
+
+                <div class="flex items-center justify-end gap-x-3">
+                  <a href="/" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+                  <button type="submit"
+                    class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600">
+                    Send Invite
+                  </button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </main>
+
+      </div>
+    </body>
+</html>

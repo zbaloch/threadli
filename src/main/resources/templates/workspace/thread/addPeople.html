@@ -12,7 +12,7 @@
           <div class="px-4 sm:px-6 lg:px-8">
             <div>
               <nav  aria-label="Back">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
                   <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
                   </svg>
@@ -37,7 +37,7 @@
                 <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                     
-                    <form th:action="@{/w/{workspaceId}/t/{threadId}/add-people(workspaceId=${workspace.id}, threadId=${thread.id})}" method="post"> <!-- Update the form action -->
+                    <form th:action="@{/t/{threadId}/add-people(threadId=${thread.id})}" method="post">
                         <table class="min-w-full divide-y divide-gray-300">
                         <thead>
                             <tr>
@@ -90,7 +90,7 @@
                     </table>
 
                     <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
+                        <a th:href="@{/t/{threadId}(threadId=${thread.id})}" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
                         <button type="submit" 
                                 
                                 class="rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-800">
@@ -112,7 +112,7 @@
       
       <script th:inline="javascript">
         /*<![CDATA[*/
-        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
+
         /*]]>*/
       </script>
       

@@ -29,8 +29,7 @@ public class User {
     private Instant createdAt;
     private Instant updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private Set<WorkspaceMembership> workspaceMemberships = new HashSet<>();
+    private boolean isAdmin = false;
 
     @OneToMany(mappedBy = "user")
     private Set<ThreadMembership> threads = new HashSet<>();

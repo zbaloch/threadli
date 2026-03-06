@@ -47,15 +47,15 @@
         <!-- Sidebar component, swap this element with another sidebar if you like -->
         <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
           <div class="flex h-16 shrink-0 items-center">
-            <img class="h-8 w-8 rounded-md mr-2" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + workspace.name}" th:alt="${workspace.name}" />
+            <img class="h-8 w-8 rounded-md mr-2" src="https://api.dicebear.com/9.x/initials/svg?seed=Threadli" alt="Threadli" />
             <div x-data="{isOpen: false}">
               <button type="button" @click="isOpen = !isOpen" class="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900" aria-expanded="false">
-                    <span th:text="${workspace.name}">Workspace</span>
+                    <span>Threadli</span>
               </button>
               <div class="mt-1"></div>
               <span th:if="${isAdmin == true}">
-              <a th:href="@{/w/{workspaceId}/settings/general(workspaceId=${workspace.id})}" class="mt-1 text-xs text-gray-500 hover:underline">Settings & members</a> 
-              <span class="text-gray-500">·</span>  
+              <a th:href="@{/settings/members}" class="mt-1 text-xs text-gray-500 hover:underline">Settings & members</a>
+              <span class="text-gray-500">·</span>
               </span>
               <!-- <a th:href="@{/w}" class="text-xs text-gray-500 hover:underline">Switch</a> -->
             </div>
@@ -69,7 +69,7 @@
             <ul role="list" class="-mx-2 space-y-1">
 
               <li>
-                <a th:href="@{/w/{workspaceId}(workspaceId=${workspace.id})}"  
+                <a th:href="@{/}"
                   th:class="${view == 'threads' ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
                     th:class="${view == 'threads' ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
@@ -123,7 +123,7 @@
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
               <li th:each="channel_ : ${userChannels}">
-                <a th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${channel_.id})}"
+                <a th:href="@{/c/{channelId}(channelId=${channel_.id})}"
                   th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                     th:class="${view == 'channel' && channel_.id == channel.id ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
@@ -157,15 +157,15 @@
     <!-- Sidebar component, swap this element with another sidebar if you like -->
     <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
       <div class="flex h-16 shrink-0 items-center">
-        <img class="h-8 w-8 rounded-md mr-2" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + workspace.name}" th:alt="${workspace.name}" />
-          
+        <img class="h-8 w-8 rounded-md mr-2" src="https://api.dicebear.com/9.x/initials/svg?seed=Threadli" alt="Threadli" />
+
           <div x-data="{isOpen: false}">
             <button type="button" @click="isOpen = !isOpen" class="inline-flex items-center gap-x-1 text-sm font-semibold leading-3 text-gray-900" aria-expanded="false">
-                <span th:text="${workspace.name}">Workspace</span>
+                <span>Threadli</span>
             </button>
             <div class="mt-1"></div>
             <span th:if="${isAdmin == true}">
-            <a  th:href="@{/w/{workspaceId}/settings/general(workspaceId=${workspace.id})}" class="mt-1 text-xs text-gray-500 hover:underline">Settings & members</a> 
+            <a  th:href="@{/settings/members}" class="mt-1 text-xs text-gray-500 hover:underline">Settings & members</a>
             <!-- <span class="text-gray-500">·</span> </span> -->
             <!-- <a th:href="@{/w}" class="text-xs text-gray-500 hover:underline">Switch</a> -->
           </div>
@@ -177,7 +177,7 @@
           <li>
             <ul role="list" class="-mx-2 space-y-1">
               <li>
-                <a th:href="@{/w/{workspaceId}(workspaceId=${workspace.id})}"  
+                <a th:href="@{/}"
                   th:class="${view == 'threads' ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
                     th:class="${view == 'threads' ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
@@ -231,7 +231,7 @@
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
                 <li th:each="channel_ : ${userChannels}">
-                    <a th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${channel_.id})}"
+                    <a th:href="@{/c/{channelId}(channelId=${channel_.id})}"
                       th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                         th:class="${view == 'channel' && channel_.id == channel.id ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
@@ -264,7 +264,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
       </svg>
     </button>
-    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900" th:text="${workspace.name}">Dashboard</div>
+    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">Threadli</div>
     <a href="/profile/edit">
       <span class="sr-only">Your profile</span>
       <img class="h-8 w-8 rounded-full bg-gray-50" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + user.firstName + ' ' + user.lastName}" th:alt="${user.firstName + ' ' + user.lastName}">

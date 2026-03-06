@@ -31,10 +31,6 @@ public class Channel {
     private String name; // display name with proper capitalization, e.g. "General", "Engineering"
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "workspace_id")
-    private Workspace workspace;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
 
@@ -58,10 +54,9 @@ public class Channel {
     public Channel() {
     }
 
-    public Channel(String name, Workspace workspace, User createdBy) {
+    public Channel(String name, User createdBy) {
         this.name = name; // display name
         this.slug = generateSlug(name);
-        this.workspace = workspace;
         this.createdBy = createdBy;
     }
 
