@@ -13,6 +13,7 @@ body {
 
 .trix-editor {
     @apply w-full;
+    font-size: 14px;
 }
 
 .trix-editor h1 {
