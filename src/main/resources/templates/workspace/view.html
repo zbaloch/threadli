@@ -130,14 +130,14 @@
                       </div>
                       <div class="min-w-0 flex-1">
                         <div class="flex justify-between items-center gap-2">
-                          <div class="flex-1 flex flex-wrap items-center gap-2 min-h-[1.5rem]">
-                            <span class="text-sm font-semibold text-gray-900" th:text="${thread.title}"></span>
-                            <span class="text-xs text-gray-500"
+                          <div class="flex-1 flex items-center gap-2 min-h-[1.5rem] overflow-hidden">
+                            <span class="text-sm font-semibold text-gray-900 truncate" th:text="${thread.title}"></span>
+                            <span class="text-xs text-gray-500 whitespace-nowrap"
                               th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
                               th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">
                             </span>
                             <span th:if="${thread.channel != null}"
-                               class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
+                               class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10 flex-shrink-0">
                               <span>#</span><span th:text="${thread.channel.name}"></span>
                             </span>
                           </div>
