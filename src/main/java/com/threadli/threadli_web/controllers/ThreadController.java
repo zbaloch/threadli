@@ -144,9 +144,9 @@ public class ThreadController {
                 .filter(channel -> channel != null)
                 .collect(java.util.stream.Collectors.toList());
 
-        boolean isAdmin = user.isAdmin();
+        boolean isAdmin = user.getIsAdmin();
 
-        model.addAttribute("threads", userThreads);
+        model.addAttribute("userThreads", userThreads);
         model.addAttribute("user", user);
         model.addAttribute("userChannels", userChannels);
         model.addAttribute("isAdmin", isAdmin);
@@ -361,7 +361,7 @@ public class ThreadController {
 
         List<Post> posts = postRepository.findByThreadId(thread.getId());
 
-        boolean isAdmin = user.isAdmin();
+        boolean isAdmin = user.getIsAdmin();
 
         // Get user's threads to filter channels for sidebar
         List<Thread> userThreads = threadRepository.findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());

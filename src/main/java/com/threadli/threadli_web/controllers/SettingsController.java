@@ -37,7 +37,7 @@ public class SettingsController {
         User user = userRepository.findByEmail(principal.getName());
 
         // Admin check
-        if (!user.isAdmin()) {
+        if (!user.getIsAdmin()) {
             redirectAttributes.addFlashAttribute("error", "Access denied");
             return "redirect:/";
         }
@@ -45,7 +45,7 @@ public class SettingsController {
         List<User> allUsers = userRepository.findAll();
         model.addAttribute("users", allUsers);
         model.addAttribute("user", user);
-        model.addAttribute("isAdmin", user.isAdmin());
+        model.addAttribute("isAdmin", user.getIsAdmin());
         model.addAttribute("pageTitle", "Threadli | Settings & Members");
 
         return "settings/members";
@@ -64,7 +64,7 @@ public class SettingsController {
         User currentUser = userRepository.findByEmail(principal.getName());
 
         // Admin check
-        if (!currentUser.isAdmin()) {
+        if (!currentUser.getIsAdmin()) {
             redirectAttributes.addFlashAttribute("error", "Access denied");
             return "redirect:/";
         }
