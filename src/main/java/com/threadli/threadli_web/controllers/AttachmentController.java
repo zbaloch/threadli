@@ -26,12 +26,11 @@ public class AttachmentController {
     @Autowired
     private AttachmentService attachmentService;
 
-    @PostMapping("/upload/{workspaceId}")
+    @PostMapping("/upload")
     @ResponseBody
-    public String uploadAttachment(@PathVariable Long workspaceId, 
-        @RequestParam("file") MultipartFile file) {
+    public String uploadAttachment(@RequestParam("file") MultipartFile file) {
         try {
-            Attachment attachment = attachmentService.saveAttachment(file, workspaceId);
+            Attachment attachment = attachmentService.saveAttachment(file);
             return "/upload/" + attachment.getId() + "/" + attachment.getFileName();
         } catch (IOException e) {
             return "Failed to upload file: " + e.getMessage();

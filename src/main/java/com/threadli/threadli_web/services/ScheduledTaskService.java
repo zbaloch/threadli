@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import com.threadli.threadli_web.repositories.ThreadRepository;
 import com.threadli.threadli_web.repositories.ThreadMembershipRepository;
 import com.threadli.threadli_web.repositories.UserRepository;
-import com.threadli.threadli_web.repositories.WorkspaceRepository;
 import com.threadli.threadli_web.models.User;
 import com.threadli.threadli_web.models.ThreadMembership;
 
@@ -34,9 +33,6 @@ public class ScheduledTaskService implements SchedulingConfigurer {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private WorkspaceRepository workspaceRepository;
 
     @Autowired
     private ThreadRepository threadRepository;

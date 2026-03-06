@@ -20,12 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.threadli.threadli_web.models.Channel;
 import com.threadli.threadli_web.models.Thread;
 import com.threadli.threadli_web.models.User;
-import com.threadli.threadli_web.models.Workspace;
-import com.threadli.threadli_web.models.WorkspaceRole;
 import com.threadli.threadli_web.repositories.ChannelRepository;
 import com.threadli.threadli_web.repositories.ThreadRepository;
 import com.threadli.threadli_web.repositories.UserRepository;
-import com.threadli.threadli_web.repositories.WorkspaceRepository;
 
 @Controller
 public class ChannelController {
@@ -41,28 +38,18 @@ public class ChannelController {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private WorkspaceRepository workspaceRepository;
-
     /**
-     * Get all channels for a workspace as JSON (for Alpine.js typeahead)
+     * Get all channels as JSON (for Alpine.js typeahead)
      * Only returns channels where the user has at least one thread
      */
-    @GetMapping("/api/w/{workspaceId}/channels")
+    @GetMapping("/api/channels")
     @ResponseBody
-    public ResponseEntity<List<Map<String, Object>>> getWorkspaceChannels(@PathVariable Long workspaceId,
-                                                                            Principal principal) {
+    public ResponseEntity<List<Map<String, Object>>> getChannels(Principal principal) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId)
-                .orElse(null);
 
-        if (workspace == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        // Get user's threads in this workspace
+        // Get user's threads
         List<Thread> userThreads = threadRepository
-                .findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+                .findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());
 
         // Get channel IDs where user has threads
         java.util.Set<Long> userChannelIds = userThreads.stream()
@@ -70,8 +57,10 @@ public class ChannelController {
                 .map(thread -> thread.getChannel().getId())
                 .collect(Collectors.toSet());
 
-        List<Map<String, Object>> channels = workspace.getChannels().stream()
-                .filter(channel -> userChannelIds.contains(channel.getId()))
+        // Get all channels and filter to only those where user has threads
+        List<Map<String, Object>> channels = userChannelIds.stream()
+                .map(channelId -> channelRepository.findById(channelId).orElse(null))
+                .filter(channel -> channel != null)
                 .map(channel -> {
                     Map<String, Object> ch = new HashMap<>();
                     ch.put("id", channel.getId());
@@ -87,54 +76,44 @@ public class ChannelController {
     /**
      * View threads in a specific channel
      */
-    @GetMapping("/w/{workspaceId}/c/{channelId}")
-    public String getChannel(@PathVariable Long workspaceId,
-                            @PathVariable Long channelId,
+    @GetMapping("/c/{channelId}")
+    public String getChannel(@PathVariable Long channelId,
                             Principal principal,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId)
-                .orElse(null);
 
-        if (workspace == null) {
-            redirectAttributes.addFlashAttribute("error", "Workspace not found");
-            return "redirect:/w";
-        }
-
-        Channel channel = channelRepository.findByWorkspaceIdAndId(workspaceId, channelId)
+        Channel channel = channelRepository.findById(channelId)
                 .orElse(null);
 
         if (channel == null) {
             redirectAttributes.addFlashAttribute("error", "Channel not found");
-            return "redirect:/w/" + workspaceId;
+            return "redirect:/";
         }
 
         // Get all non-deleted threads in this channel where user is a member, ordered by most recent
         List<Thread> allChannelThreads = threadRepository
-                .findByWorkspaceIdAndChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, channelId);
+                .findByChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(channelId);
         List<Thread> threads = allChannelThreads.stream()
                 .filter(thread -> thread.getMemberships().stream()
                         .anyMatch(membership -> membership.getUser().getId().equals(user.getId())))
                 .collect(Collectors.toList());
 
         // Check if user is admin
-        boolean isAdmin = workspace.getMemberships().stream()
-                .anyMatch(membership -> membership.getUser().getId().equals(user.getId())
-                        && membership.getRole() == WorkspaceRole.ADMIN);
+        boolean isAdmin = user.getIsAdmin();
 
-        // Get all user's threads in workspace to filter channels
-        List<Thread> userWorkspaceThreads = threadRepository
-                .findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
-        java.util.Set<Long> userChannelIds = userWorkspaceThreads.stream()
+        // Get all user's threads to filter channels
+        List<Thread> userThreads = threadRepository
+                .findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());
+        java.util.Set<Long> userChannelIds = userThreads.stream()
                 .filter(thread -> thread.getChannel() != null)
                 .map(thread -> thread.getChannel().getId())
                 .collect(Collectors.toSet());
-        List<Channel> userChannels = workspace.getChannels().stream()
-                .filter(ch -> userChannelIds.contains(ch.getId()))
+        List<Channel> userChannels = userChannelIds.stream()
+                .map(id -> channelRepository.findById(id).orElse(null))
+                .filter(ch -> ch != null)
                 .collect(Collectors.toList());
 
-        model.addAttribute("workspace", workspace);
         model.addAttribute("channel", channel);
         model.addAttribute("threads", threads);
         model.addAttribute("userChannels", userChannels);
@@ -143,7 +122,7 @@ public class ChannelController {
         model.addAttribute("view", "channel");
         model.addAttribute("pageTitle", channel.getName());
 
-        log.info("Viewing channel: {} in workspace: {}", channel.getName(), workspaceId);
+        log.info("Viewing channel: {}", channel.getName());
 
         return "workspace/channel/view";
     }

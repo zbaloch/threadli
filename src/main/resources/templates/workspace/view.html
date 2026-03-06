@@ -24,8 +24,8 @@
             <div>
               <div class="lg:flex lg:items-center lg:justify-between">
                 <div class="min-w-0 flex-1">
-                  <h2 th:text="${workspace.name}" class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-                    Channle name
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    Threads
                   </h2>
                   <!-- <a th:href="@{/w/{workspaceId}/settings/general(workspaceId=${workspace.id})}" class="mt-2 text-xs text-gray-500 hover:underline">Settings & members</a>  -->
 
@@ -50,7 +50,7 @@
                   </div> -->
               
                   <span class="sm:ml-3">
-                    <a th:href="@{/w/{workspaceId}/compose(workspaceId=${workspace.id})}" type="button" 
+                    <a th:href="@{/compose}" type="button"
                       class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 
                       <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1.5">
@@ -91,7 +91,7 @@
               <h3 class="mt-2 text-sm font-semibold text-gray-900">Every discussion is a thread</h3>
               <p class="mt-1 text-sm text-gray-500">Threads keep discussions on-topic. They can be linked, referenced, and searched for later. It's your Threadli superpower.</p>
               <div class="mt-6">
-                <a th:href="@{/w/{workspaceId}/compose(workspaceId=${workspace.id})}" type="button" 
+                <a th:href="@{/compose}" type="button"
                   class="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
 
                   <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 mr-1.5">
@@ -108,12 +108,12 @@
             <div th:if="${userThreads.size() > 0}" class="mt-8">
               
               <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == true}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
+                      <div class="relative flex flex-col text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                         </svg>
@@ -196,12 +196,12 @@
               </div>
               
               <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == false && thread.isClosed == false}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
+                      <div class="relative flex flex-col text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                         </svg>
@@ -279,12 +279,12 @@
               </div>
 
               <div class="mx-auto max-w-none" th:each="thread : ${userThreads}" th:if="${thread.pinned == false && thread.isClosed == true}">
-                <a th:href="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}">
+                <a th:href="@{/t/{threadId}(threadId=${thread.id})}">
                 
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
+                      <div class="relative flex flex-col text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                         </svg>

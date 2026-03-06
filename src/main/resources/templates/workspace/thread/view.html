@@ -15,9 +15,9 @@
       isSubmitting: false,
       
       async initAddPeopleModal() {
-        // Fetch workspace members
+        // Fetch members
         try {
-          const response = await fetch(`/api/w/${workspaceId}/members`);
+          const response = await fetch(`/api/members`);
           if (response.ok) {
             this.availablePeople = await response.json();
           }
@@ -72,15 +72,15 @@
       
       async submitAddPeople() {
         if (this.selectedPeople.length === 0 || this.isSubmitting) return;
-        
+
         this.isSubmitting = true;
         try {
           const formData = new FormData();
           this.selectedPeople.forEach(person => {
             formData.append('memberIds', person.id);
           });
-          
-          const response = await fetch(`/w/${workspaceId}/t/${threadId}/add-people`, {
+
+          const response = await fetch(`/t/${threadId}/add-people`, {
             method: 'POST',
             body: formData
           });
@@ -120,7 +120,7 @@
           <div class="px-4 sm:px-6 lg:px-8">
             <div>
               <nav  aria-label="Back">
-                <a th:href="@{/w/{worskpaceId}(worskpaceId=${workspace.id})}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
+                <a th:href="@{/}" class="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700">
                   <svg class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
                   </svg>
@@ -133,7 +133,7 @@
                   <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
                     <span th:text="${thread.title}">New thread</span>
                     <a th:if="${thread.channel != null}"
-                       th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${thread.channel.id})}"
+                       th:href="@{/c/{channelId}(channelId=${thread.channel.id})}"
                        class="ml-2 inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10 hover:bg-cyan-100">
                       <span>#</span><span th:text="${thread.channel.name}"></span>
                     </a>
@@ -192,27 +192,27 @@
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Add people</span>
                         </button>
-                        <a th:if="${thread.isPinned == false}" th:href="@{/w/{workspaceId}/t/{threadId}/pin(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                        <a th:if="${thread.isPinned == false}" th:href="@{/t/{threadId}/pin(threadId=${thread.id})}"
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Pin thread</span>
                         </a>
 
-                        <a th:if="${thread.isPinned == true}" th:href="@{/w/{workspaceId}/t/{threadId}/unpin(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                        <a th:if="${thread.isPinned == true}" th:href="@{/t/{threadId}/unpin(threadId=${thread.id})}"
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Unpin thread</span>
                         </a>
 
-                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == false}" th:href="@{/w/{workspaceId}/t/{threadId}/close(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == false}" th:href="@{/t/{threadId}/close(threadId=${thread.id})}"
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Close thread...</span>
                         </a>
 
-                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == true}" th:href="@{/w/{workspaceId}/t/{threadId}/open(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                        <a th:if="${thread.createdBy.id == user.id && thread.isClosed == true}" th:href="@{/t/{threadId}/open(threadId=${thread.id})}"
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Open thread...</span>
                         </a>
 
-                        <a th:href="@{/w/{workspaceId}/t/{threadId}/delete(workspaceId=${workspace.id}, threadId=${thread.id})}"
+                        <a th:href="@{/t/{threadId}/delete(threadId=${thread.id})}"
                           class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                           <span>Delete thread</span>
                         </a>
@@ -280,7 +280,7 @@
                               <!-- <button type="button" class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                                 <span>Archive</span>
                               </button> -->
-                              <a th:href="@{/w/{workspaceId}/t/{threadId}/p/{postId}/delete(workspaceId=${workspace.id}, threadId=${thread.id}, postId=${post.id})}"
+                              <a th:href="@{/t/{threadId}/p/{postId}/delete(threadId=${thread.id}, postId=${post.id})}"
                                 class="flex w-full justify-between px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="menu-0-item-2">
                                 <span>Delete</span>
                               </a>
@@ -301,8 +301,8 @@
               </div>
             </div>
             
-            <form method="POST" 
-            th:action="@{/w/{workspaceId}/t/{threadId}(workspaceId=${workspace.id}, threadId=${thread.id})}"
+            <form method="POST"
+            th:action="@{/t/{threadId}(threadId=${thread.id})}"
             x-data="{ content: '', isSubmitting: false }"
             x-on:submit.prevent="if (content.trim() && !isSubmitting) { isSubmitting = true; $el.submit(); }"
             >
@@ -473,11 +473,9 @@
       
       <script th:inline="javascript">
         /*<![CDATA[*/
-        var workspaceId = /*[[${workspace.id}]]*/ 'default-url';
         var threadId = /*[[${thread.id}]]*/ 'default-thread-id';
         /*]]>*/
-      
-        console.log("workspaceId: ", workspaceId);
+
         console.log("threadId: ", threadId);
       </script>
       

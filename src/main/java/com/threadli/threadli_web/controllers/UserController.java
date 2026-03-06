@@ -25,12 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.threadli.threadli_web.models.User;
-import com.threadli.threadli_web.models.Workspace;
-import com.threadli.threadli_web.models.WorkspaceMembership;
-import com.threadli.threadli_web.models.WorkspaceRole;
 import com.threadli.threadli_web.repositories.UserRepository;
-import com.threadli.threadli_web.repositories.WorkspaceMembershipRepository;
-import com.threadli.threadli_web.repositories.WorkspaceRepository;
 import com.threadli.threadli_web.services.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,12 +46,6 @@ public class UserController {
 
     @Autowired
     private EmailService emailService;
-
-    @Autowired
-    private WorkspaceRepository workspaceRepository;
-
-    @Autowired
-    private WorkspaceMembershipRepository workspaceMembershipRepository;
 
 
     // private SecurityContextRepository securityContextRepository;
@@ -126,20 +115,17 @@ public class UserController {
             existingUser.setToken(null);
             existingUser.setTokenUsedDate(null);
             existingUser.setTokenExpirationDate(null);
-            userRepository.save(existingUser);
 
-            List<Workspace> workspaces = workspaceRepository.findByMembershipsUserId(existingUser.getId());
-
-            if(workspaces.size() == 0) {
-                createWorkspaceForUser(existingUser);
+            // First user to register is admin
+            if (userRepository.count() == 1) {
+                existingUser.setIsAdmin(true);
             }
 
-            workspaces = workspaceRepository.findByMembershipsUserId(existingUser.getId());
+            userRepository.save(existingUser);
 
-            model.addAttribute("workspaces", workspaces);
             model.addAttribute("user", existingUser);
 
-            return "redirect:/w/" + workspaces.iterator().next().getId();
+            return "redirect:/";
         } else {
             model.addAttribute("errorTitle", "Login error");
             model.addAttribute("errorMessage", "No account for this email. Signup now to selling on Async.");
@@ -229,15 +215,9 @@ public class UserController {
 
             emailService.sendEmail(existingUser);
 
-            List<Workspace> workspaces = workspaceRepository.findByMembershipsUserId(existingUser.getId());
-
-            if(workspaces.size() == 0) {
-                createWorkspaceForUser(existingUser);
-            }
-
             model.addAttribute("successTitle", "Magic link sent to email");
             model.addAttribute("successMessage", "Check your email for the magic link to login to your account.");
-            
+
             return "login";
 
         } else {
@@ -283,48 +263,6 @@ public class UserController {
         return String.valueOf(Hex.encode(bytes));
     }
 
-
-    private void createWorkspaceForUser(User user) {
-        // Since Sep 22, 2025: All users join the default workspace instead of creating individual ones
-        
-        // Get the default workspace (should exist due to startup initialization)
-        List<Workspace> allWorkspaces = workspaceRepository.findAll();
-        Workspace defaultWorkspace;
-        
-        if (allWorkspaces.isEmpty()) {
-            // Fallback: Create default workspace if it somehow doesn't exist
-            log.warn("No default workspace found during user registration. Creating one now.");
-            defaultWorkspace = new Workspace();
-            defaultWorkspace.setName("Default Workspace");
-            defaultWorkspace.setCreatedBy(user); // This user becomes the creator
-            workspaceRepository.save(defaultWorkspace);
-        } else {
-            // Use the first (and should be only) default workspace
-            defaultWorkspace = allWorkspaces.get(0);
-        }
-
-        // Check if user is already a member of this workspace
-        boolean alreadyMember = workspaceMembershipRepository
-            .findByWorkspaceIdAndUserId(defaultWorkspace.getId(), user.getId())
-            .isPresent();
-            
-        if (!alreadyMember) {
-            // Add user to the default workspace
-            WorkspaceMembership membership = new WorkspaceMembership();
-            membership.setUser(user);
-            membership.setWorkspace(defaultWorkspace);
-            
-            // First user becomes admin, others become members
-            boolean isFirstUser = workspaceMembershipRepository.count() == 0;
-            membership.setRole(isFirstUser ? WorkspaceRole.ADMIN : WorkspaceRole.MEMBER);
-            membership.setDefaultWorkspace(true);
-            
-            workspaceMembershipRepository.save(membership);
-            
-            log.info("Added user {} to default workspace as {}", 
-                    user.getEmail(), membership.getRole());
-        }
-    }
 
     @GetMapping("/profile/edit")
     public String editProfile(Principal principal, Model model) {

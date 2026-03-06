@@ -11,23 +11,13 @@ import com.threadli.threadli_web.models.Thread;
 
 @Repository
 public interface ThreadRepository extends JpaRepository<Thread, Long> {
-    // Custom query methods can be added here if needed
-    List<Thread> findByWorkspaceId(Long workspaceId);
+    // Find threads for a user, excluding soft-deleted
+    List<Thread> findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(Long userId);
 
-    // Find by channel id and thread id
-    Optional<Thread> findByWorkspaceIdAndId(Long workspaceId, Long threadId);
-
-    List<Thread> findByWorkspaceIdAndMemberships_User_Id(Long workspaceId, Long userId);
-
-    List<Thread> findByWorkspaceIdAndMemberships_User_IdOrderByUpdatedAtDesc(Long workspaceId, Long userId);
-
-    // Excludes soft-deleted threads - use this everywhere threads are listed
-    List<Thread> findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(Long workspaceId, Long userId);
-
-    // Excludes soft-deleted threads - use for single thread lookup
-    Optional<Thread> findByWorkspaceIdAndIdAndIsDeletedFalse(Long workspaceId, Long threadId);
+    // Find single thread by id, excluding soft-deleted
+    Optional<Thread> findByIdAndIsDeletedFalse(Long threadId);
 
     // Find threads by channel, excluding soft-deleted threads
-    List<Thread> findByWorkspaceIdAndChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(Long workspaceId, Long channelId);
+    List<Thread> findByChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(Long channelId);
 
 }

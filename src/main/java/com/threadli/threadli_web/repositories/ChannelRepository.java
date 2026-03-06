@@ -10,9 +10,7 @@ import com.threadli.threadli_web.models.Channel;
 
 @Repository
 public interface ChannelRepository extends JpaRepository<Channel, Long> {
-    List<Channel> findByWorkspaceIdOrderByNameAsc(Long workspaceId);
+    List<Channel> findAllByOrderByNameAsc();
 
-    Optional<Channel> findByWorkspaceIdAndSlug(Long workspaceId, String slug);
-
-    Optional<Channel> findByWorkspaceIdAndId(Long workspaceId, Long channelId);
+    Optional<Channel> findBySlug(String slug);
 }

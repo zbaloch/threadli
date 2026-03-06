@@ -21,15 +21,11 @@ import com.threadli.threadli_web.models.Channel;
 import com.threadli.threadli_web.models.Post;
 import com.threadli.threadli_web.models.ThreadMembership;
 import com.threadli.threadli_web.models.User;
-import com.threadli.threadli_web.models.Workspace;
-import com.threadli.threadli_web.models.WorkspaceRole;
 import com.threadli.threadli_web.repositories.ChannelRepository;
 import com.threadli.threadli_web.repositories.PostRepository;
 import com.threadli.threadli_web.repositories.ThreadMembershipRepository;
 import com.threadli.threadli_web.repositories.ThreadRepository;
 import com.threadli.threadli_web.repositories.UserRepository;
-import com.threadli.threadli_web.repositories.WorkspaceRepository;
-import com.threadli.threadli_web.services.WorkspaceService;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,13 +37,7 @@ import com.threadli.threadli_web.models.Thread;
 @Controller
 public class ThreadController {
 
-    private static final Logger log = LoggerFactory.getLogger(WorkspaceController.class);
-
-    @Autowired
-    private WorkspaceService workspaceService;
-
-    @Autowired
-    private WorkspaceRepository workspaceRepository;
+    private static final Logger log = LoggerFactory.getLogger(ThreadController.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -97,18 +87,14 @@ public class ThreadController {
     }
     
 
-    @GetMapping("/w/{workspaceId}/compose")
-    public String accessWorkspace(@PathVariable Long workspaceId,
-                                    @RequestParam(value = "channel", required = false) String channel,
+    @GetMapping("/compose")
+    public String accessCompose(@RequestParam(value = "channel", required = false) String channel,
                                     Principal principal,
                                   RedirectAttributes redirectAttributes,
                                   Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        log.info("workspace " + workspaceId);
+        log.info("Accessing compose page");
         model.addAttribute("user", user);
-        model.addAttribute("workspace", workspace);
-        model.addAttribute("workspaceMembers", workspace.getMemberships());
         if (channel != null) {
             model.addAttribute("prefilledChannel", channel);
         }
@@ -117,48 +103,70 @@ public class ThreadController {
         return "workspace/thread/compose";
     }
 
-    @GetMapping("/api/w/{workspaceId}/members")
+    @GetMapping("/api/members")
     @ResponseBody
-    public ResponseEntity<List<Map<String, Object>>> getWorkspaceMembers(@PathVariable Long workspaceId, 
-                                                                          Principal principal) {
+    public ResponseEntity<List<Map<String, Object>>> getMembers(Principal principal) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).orElse(null);
-        
-        if (workspace == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Map<String, Object>> members = workspace.getMemberships().stream()
-            .filter(membership -> !membership.getUser().getId().equals(user.getId())) // Exclude current user
-            .map(membership -> {
+
+        // Get all users in the system (excluding current user)
+        List<User> allUsers = userRepository.findAll();
+
+        List<Map<String, Object>> members = allUsers.stream()
+            .filter(u -> !u.getId().equals(user.getId())) // Exclude current user
+            .map(memberUser -> {
                 Map<String, Object> member = new HashMap<>();
-                User memberUser = membership.getUser();
                 member.put("id", memberUser.getId());
                 member.put("name", memberUser.getFirstName() + " " + memberUser.getLastName());
                 member.put("email", memberUser.getEmail());
-                member.put("avatar", "https://api.dicebear.com/9.x/initials/svg?seed=" + 
+                member.put("avatar", "https://api.dicebear.com/9.x/initials/svg?seed=" +
                           memberUser.getFirstName() + " " + memberUser.getLastName());
                 return member;
             })
             .collect(Collectors.toList());
-            
+
         return ResponseEntity.ok(members);
     }
 
-    @PostMapping("/w/{workspaceId}/compose")
-    public String createThread(@PathVariable Long workspaceId,
-                                @RequestParam("title") String title,
+    @GetMapping("/t/list")
+    public String listThreads(Principal principal, Model model) {
+        User user = userRepository.findByEmail(principal.getName());
+
+        // Get all threads where the user is a member, ordered by most recently updated
+        List<Thread> userThreads = threadRepository.findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());
+
+        // Get user's channels for sidebar
+        java.util.Set<Long> userChannelIds = userThreads.stream()
+                .filter(t -> t.getChannel() != null)
+                .map(t -> t.getChannel().getId())
+                .collect(java.util.stream.Collectors.toSet());
+        List<Channel> userChannels = userChannelIds.stream()
+                .map(id -> channelRepository.findById(id).orElse(null))
+                .filter(channel -> channel != null)
+                .collect(java.util.stream.Collectors.toList());
+
+        boolean isAdmin = user.getIsAdmin();
+
+        model.addAttribute("userThreads", userThreads);
+        model.addAttribute("user", user);
+        model.addAttribute("userChannels", userChannels);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("view", "workspace");
+        model.addAttribute("pageTitle", "Threadli | Threads");
+
+        return "workspace/view";
+    }
+
+    @PostMapping("/compose")
+    public String createThread(@RequestParam("title") String title,
                                 @RequestParam("content") String content,
                                 @RequestParam(value = "selectedMembers", required = false) List<Long> selectedMemberIds,
                                 @RequestParam(value = "channelName", required = false) String channelName,
                                 Principal principal,
                                 Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
         com.threadli.threadli_web.models.Thread thread = new com.threadli.threadli_web.models.Thread();
         thread.setTitle(title);
         thread.setCreatedBy(user);
-        thread.setWorkspace(workspace);
 
         // Handle channel assignment
         if (channelName != null && !channelName.trim().isEmpty()) {
@@ -170,11 +178,11 @@ public class ThreadController {
                 String slug = Channel.generateSlug(cleanedName);
 
                 // Find or create channel
-                Channel channel = channelRepository.findByWorkspaceIdAndSlug(workspaceId, slug)
+                Channel channel = channelRepository.findBySlug(slug)
                         .orElseGet(() -> {
                             // Auto-capitalize first letter and first letter after space
                             String displayName = capitalizeWords(cleanedName);
-                            Channel newChannel = new Channel(displayName, workspace, user);
+                            Channel newChannel = new Channel(displayName, user);
                             return channelRepository.save(newChannel);
                         });
                 thread.setChannel(channel);
@@ -182,12 +190,12 @@ public class ThreadController {
         }
 
         threadRepository.save(thread);
-        
+
         // Add the creator to the thread
         ThreadMembership creatorMembership = new ThreadMembership(user, thread);
         creatorMembership.setCaughtUp(true);
         threadMembershipRepository.save(creatorMembership);
-        
+
         // Add selected members to the thread
         if (selectedMemberIds != null && !selectedMemberIds.isEmpty()) {
             for (Long memberId : selectedMemberIds) {
@@ -199,7 +207,7 @@ public class ThreadController {
                 }
             }
         }
-        
+
         Post post = new Post();
         post.setContent(content);
         post.setThread(thread);
@@ -208,32 +216,39 @@ public class ThreadController {
 
         thread.getPosts().add(post);
 
-        model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("post", post);
         model.addAttribute("user", user);
-        
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+
+        return "redirect:/t/" + thread.getId();
     }
 
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/add-people")
-    public String addPeopleToThread(@PathVariable Long workspaceId, 
-                                    @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/add-people")
+    public String addPeopleToThread(@PathVariable Long threadId,
                                 Principal principal,
                                 Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
 
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
 
-        model.addAttribute("workspace", workspace);
+        // Get all users in the system (excluding current user) for the add people form
+        List<User> allUsers = userRepository.findAll();
+        List<User> availableUsers = allUsers.stream()
+            .filter(u -> !u.getId().equals(user.getId()))
+            .collect(Collectors.toList());
+
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
+        model.addAttribute("availableUsers", availableUsers);
 
         // Check if the user is already a member of the thread
         boolean isMember = threadMembershipRepository.findByThreadId(thread.getId()).stream()
@@ -244,32 +259,29 @@ public class ThreadController {
             threadMembershipRepository.save(threadMembership);
         }
 
-        if(workspace.getMemberships().size() == 1) {
-            return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
-        } else {
-            return "workspace/thread/addPeople";
-        }
-
+        return "workspace/thread/addPeople";
     }
 
-    @PostMapping("/w/{workspaceId}/t/{threadId}/add-people")
-    public String addPeopleToThreadPost(@PathVariable Long workspaceId, 
-                                    @PathVariable Long threadId,
-                                    @RequestParam(required = false) List<Long> memberIds, // Accept member IDs
+    @PostMapping("/t/{threadId}/add-people")
+    public String addPeopleToThreadPost(@PathVariable Long threadId,
+                                    @RequestParam(required = false) List<Long> memberIds,
                                     Principal principal,
                                     Model model) {
-                                        log.info("memberIds " + memberIds);
+        log.info("memberIds " + memberIds);
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
-        
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
+
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
-        
+
         if(memberIds != null && memberIds.size() > 0)  {
-            
+
             // Logic to add members to the thread
             for (Long memberId : memberIds) {
                 User member = userRepository.findById(memberId).orElse(null);
@@ -281,74 +293,69 @@ public class ThreadController {
                         continue;
                     }
                     // Add logic to associate the member with the thread
-                    // For example, you might have a method in your Thread model to add members
-                    // thread.addMember(member); // Assuming you have this method
-                    ThreadMembership membership = new ThreadMembership(user, thread);
-                    membership.setThread(thread);
-                    membership.setUser(member);
+                    ThreadMembership membership = new ThreadMembership(member, thread);
                     membership.setCaughtUp(false);
                     threadMembershipRepository.save(membership);
                 }
             }
-            
+
             threadRepository.save(thread); // Save the updated thread
         }
 
-        model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
 
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        return "redirect:/t/" + thread.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/p/{postId}/delete")
-        public String deletePost(@PathVariable Long workspaceId, 
-        @PathVariable Long channelId,
-        @PathVariable Long threadId,
-        @PathVariable Long postId,
-        Principal principal,
-        Model mode
-        ) {
-        
-            User user = userRepository.findByEmail(principal.getName());
-            Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-            com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
-            
-            // SECURITY CHECK: Verify user is a member of this thread
-            if (!isUserThreadMember(threadId, user.getId())) {
-                return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
-            }
-            
-            Post post = postRepository.findByCreatedByAndId(user, postId).get();
+    @GetMapping("/t/{threadId}/p/{postId}/delete")
+    public String deletePost(@PathVariable Long threadId,
+                            @PathVariable Long postId,
+                            Principal principal,
+                            Model model) {
+
+        User user = userRepository.findByEmail(principal.getName());
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
+
+        // SECURITY CHECK: Verify user is a member of this thread
+        if (!isUserThreadMember(threadId, user.getId())) {
+            return "redirect:/?error=thread_access_denied";
+        }
+
+        Post post = postRepository.findByCreatedByAndId(user, postId).orElse(null);
+        if (post != null) {
             postRepository.delete(post);
-            return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        }
+        return "redirect:/t/" + thread.getId();
     }
     
 
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}")
-    public String getThread(@PathVariable Long workspaceId,
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}")
+    public String getThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model,
                             RedirectAttributes redirectAttributes) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        Thread thread = threadRepository.findByWorkspaceIdAndId(workspaceId, threadId).get();
+        Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
 
-        // SECURITY CHECK: Check if thread is soft-deleted
-        if (thread.isDeleted()) {
+        // SECURITY CHECK: Check if thread exists and is not soft-deleted
+        if (thread == null) {
             redirectAttributes.addFlashAttribute("error", "This thread has been deleted.");
-            return "redirect:/w/" + workspaceId;
+            return "redirect:/";
         }
 
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
             // User is not a member of this thread - redirect with error message
             redirectAttributes.addFlashAttribute("error", "You don't have access to this thread.");
-            return "redirect:/w/" + workspaceId;
+            return "redirect:/";
         }
-        
+
         List<ThreadMembership> memberships = threadMembershipRepository.findByThreadId(thread.getId());
         for(ThreadMembership membership : memberships) {
             log.info("" + membership.getUser().getId());
@@ -357,29 +364,24 @@ public class ThreadController {
                 membership.setCaughtUp(true);
                 threadMembershipRepository.save(membership);
             }
-
         }
-
-        // Mark the thread as caughtup for this user
-
-        
 
         List<Post> posts = postRepository.findByThreadId(thread.getId());
 
-        boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
+        boolean isAdmin = user.getIsAdmin();
 
         // Get user's threads to filter channels for sidebar
-        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+        List<Thread> userThreads = threadRepository.findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());
         java.util.Set<Long> userChannelIds = userThreads.stream()
                 .filter(t -> t.getChannel() != null)
                 .map(t -> t.getChannel().getId())
                 .collect(java.util.stream.Collectors.toSet());
-        List<com.threadli.threadli_web.models.Channel> userChannels = workspace.getChannels().stream()
-                .filter(channel -> userChannelIds.contains(channel.getId()))
+        List<com.threadli.threadli_web.models.Channel> userChannels = userChannelIds.stream()
+                .map(id -> channelRepository.findById(id).orElse(null))
+                .filter(channel -> channel != null)
                 .collect(java.util.stream.Collectors.toList());
 
         model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("memberships",memberships);
         model.addAttribute("user", user);
@@ -390,21 +392,23 @@ public class ThreadController {
         return "workspace/thread/view";
     }
 
-    @PostMapping("/w/{workspaceId}/t/{threadId}")
-    public String postThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long threadId,
+    @PostMapping("/t/{threadId}")
+    public String postThread(@PathVariable Long threadId,
                             @RequestParam("content") String content,
                             Principal principal,
                             Model model) {
         log.info("posting thread " + content);
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
 
         // SECURITY CHECK: Verify user is a member of this thread before allowing posts
         if (!isUserThreadMember(threadId, user.getId())) {
             // User is not a member of this thread - redirect with error message
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
 
         thread.getMemberships().forEach(membership -> {
@@ -425,29 +429,30 @@ public class ThreadController {
 
         List<Post> posts = postRepository.findByThreadId(threadId);
 
-        model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
         model.addAttribute("view", "workspace");
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        return "redirect:/t/" + thread.getId();
     }
 
 
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/delete")
-    public String deleteThread(@PathVariable Long workspaceId,
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/delete")
+    public String deleteThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
 
-        // SECURITY CHECK: Only thread creator or workspace admin can delete threads
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
+
+        // SECURITY CHECK: Only thread creator or admin can delete threads
         // But first verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
 
         // Soft delete instead of permanent delete
@@ -456,84 +461,91 @@ public class ThreadController {
         thread.setDeletedBy(user);
         threadRepository.save(thread);
 
-        return "redirect:/w/" + workspace.getId();
+        return "redirect:/";
     }
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/pin")
-    public String pinThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/pin")
+    public String pinThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
 
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
-        
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
+
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
-        
+
         thread.setPinned(true);
         threadRepository.save(thread);
-        
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+
+        return "redirect:/t/" + thread.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/unpin")
-    public String unpinThread(@PathVariable Long workspaceId, 
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/unpin")
+    public String unpinThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
-        
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
+
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
-        
+
         thread.setPinned(false);
         threadRepository.save(thread);
-        
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+
+        return "redirect:/t/" + thread.getId();
     }
 
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/close")
-    public String closeThread(@PathVariable Long workspaceId,
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/close")
+    public String closeThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
 
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
         thread.setClosed(true);
         thread.setClosedAt(Instant.now());
         thread.setClosedBy(user);
         threadRepository.save(thread);
 
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        return "redirect:/t/" + thread.getId();
     }
 
-    @GetMapping("/w/{workspaceId}/t/{threadId}/open")
-    public String openThread(@PathVariable Long workspaceId,
-                            @PathVariable Long threadId,
+    @GetMapping("/t/{threadId}/open")
+    public String openThread(@PathVariable Long threadId,
                             Principal principal,
                             Model model) {
         User user = userRepository.findByEmail(principal.getName());
-        Workspace workspace = workspaceRepository.findByMembershipsUserIdAndId(user.getId(), workspaceId).get();
-        com.threadli.threadli_web.models.Thread thread = threadRepository.findByWorkspaceIdAndId(workspace.getId(), threadId).get();
+        com.threadli.threadli_web.models.Thread thread = threadRepository.findByIdAndIsDeletedFalse(threadId).orElse(null);
+
+        if (thread == null) {
+            return "redirect:/?error=thread_not_found";
+        }
 
         // SECURITY CHECK: Verify user is a member of this thread
         if (!isUserThreadMember(threadId, user.getId())) {
-            return "redirect:/w/" + workspaceId + "?error=thread_access_denied";
+            return "redirect:/?error=thread_access_denied";
         }
 
         thread.setClosed(false);
@@ -541,7 +553,7 @@ public class ThreadController {
         thread.setClosedBy(null);
         threadRepository.save(thread);
 
-        return "redirect:/w/" + workspace.getId() + "/t/" + thread.getId();
+        return "redirect:/t/" + thread.getId();
     }
 
 

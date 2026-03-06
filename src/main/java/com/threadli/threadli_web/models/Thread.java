@@ -50,10 +50,6 @@ public class Thread {
 
     private boolean isPinned = false;
 
-    @ManyToOne
-	@JoinColumn(name = "workspace_id")
-	private Workspace workspace;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "channel_id")
     private Channel channel;

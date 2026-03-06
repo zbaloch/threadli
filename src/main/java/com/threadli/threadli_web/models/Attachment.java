@@ -31,8 +31,4 @@ public class Attachment {
     @Column(name = "data")
     private byte[] data;
 
-    @ManyToOne
-    @JoinColumn(name = "workspace_id")
-    private Workspace workspace;
-
 }
