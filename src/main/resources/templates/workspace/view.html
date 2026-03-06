@@ -113,33 +113,45 @@
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="mx-auto my-auto text-gray-600 w-4">
+                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-                        </svg>   
+                        </svg>
                         <svg th:if="${thread.isClosed}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-cyan-600">
                           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>  
-
-                        
-                                           
+                        </svg>
+                        <svg class="h-2 w-2 text-red-600 fill-current absolute bottom-0 right-0" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
+                          th:if="${membership.user.id == user.id && !membership.caughtUp}">
+                          <circle cx="3" cy="3" r="3" />
+                        </svg>
                       </div>
                       <div class="flex-shrink-0">
                         <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                       </div>
                       <div class="min-w-0 flex-1">
-                        <div class="flex justify-between">
-                          <p class="text-sm font-semibold text-gray-900">
-                            <span th:text="${thread.title}"></span>
-                          </p>
-
-                          <div>
-                            <span class="text-sm text-gray-500" 
-                          th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
-                        
+                        <div class="flex justify-between items-start gap-2">
+                          <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold text-gray-900 min-h-[1.5rem]">
+                              <span th:text="${thread.title}"></span>
+                              <span th:if="${thread.channel != null}"
+                                 class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
+                                <span>#</span><span th:text="${thread.channel.name}"></span>
+                              </span>
+                            </div>
+                            <span class="text-xs text-gray-500"
+                              th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
+                              th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">
+                            </span>
                           </div>
-                          
+
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              th:class="${!mem.caughtUp ? 'inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10' : 'inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10'}">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                            </span>
+                          </div>
+
                         </div>
                         
                         <div class="text-sm text-gray-500 inline-content inline-content line-clamp-2" th:if="${!thread.posts.empty}">
@@ -172,33 +184,46 @@
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="mx-auto my-auto text-gray-600 w-4">
+                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-                        </svg>   
+                        </svg>
                         <svg th:if="${thread.isClosed}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-cyan-600">
                           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
                         </svg>
-                        
-                        <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
+                        <svg class="h-2 w-2 text-red-600 fill-current absolute bottom-0 right-0" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
                           th:if="${membership.user.id == user.id && !membership.caughtUp}">
                           <circle cx="3" cy="3" r="3" />
                         </svg>
-
                       </div>
                       <div class="flex-shrink-0">
                         <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                       </div>
                       <div class="min-w-0 flex-1">
-                        <div class="flex justify-between">
-                          <p class="text-sm font-semibold text-gray-900">
-                            <span th:text="${thread.title}"></span>
-                          </p>
-                          <span class="text-sm text-gray-500" 
-                          th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
+                        <div class="flex justify-between items-start gap-2">
+                          <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold text-gray-900 min-h-[1.5rem]">
+                              <span th:text="${thread.title}"></span>
+                              <span th:if="${thread.channel != null}"
+                                 class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
+                                <span>#</span><span th:text="${thread.channel.name}"></span>
+                              </span>
+                            </div>
+                            <span class="text-xs text-gray-500"
+                              th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
+                              th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">
+                            </span>
+                          </div>
+
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              th:class="${!mem.caughtUp ? 'inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10' : 'inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10'}">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                            </span>
+                          </div>
                         </div>
-                        
+
                         <div class="text-sm text-gray-500 inline-content inline-content line-clamp-2" th:if="${!thread.posts.empty}">
                           <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                 th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName + ': '}"></span>
@@ -229,27 +254,46 @@
                   <div class="overflow-hidden bg-white hover:bg-cyan-50 rounded-lg">
                   <div class="px-4 py-5 sm:px-6">
                     <div class="flex space-x-3">
-                      <div class="mx-auto my-auto text-gray-600 w-4">
+                      <div class="relative flex items-center justify-center w-5 h-5 text-gray-600">
                         <svg th:if="${thread.isPinned}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
-                        </svg>   
+                        </svg>
                         <svg th:if="${thread.isClosed}" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-cyan-600">
                           <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                        </svg>                
+                        </svg>
+                        <svg class="h-2 w-2 text-red-600 fill-current absolute bottom-0 right-0" viewBox="0 0 6 6" aria-hidden="true" th:each="membership : ${thread.memberships}"
+                          th:if="${membership.user.id == user.id && !membership.caughtUp}">
+                          <circle cx="3" cy="3" r="3" />
+                        </svg>
                       </div>
                       <div class="flex-shrink-0">
                         <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                       </div>
                       <div class="min-w-0 flex-1">
-                        <div class="flex justify-between">
-                          <p class="text-sm font-semibold text-gray-900">
-                            <span th:text="${thread.title}"></span>
-                          </p>
-                          <span class="text-sm text-gray-500" 
-                          th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
-                          th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">Date not available</span>
+                        <div class="flex justify-between items-start gap-2">
+                          <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold text-gray-900 min-h-[1.5rem]">
+                              <span th:text="${thread.title}"></span>
+                              <span th:if="${thread.channel != null}"
+                                 class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
+                                <span>#</span><span th:text="${thread.channel.name}"></span>
+                              </span>
+                            </div>
+                            <span class="text-xs text-gray-500"
+                              th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
+                              th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">
+                            </span>
+                          </div>
+
+                          <div class="flex-shrink-0">
+                            <span th:each="mem: ${thread.memberships}"
+                              th:if="${mem.user.id == user.id}"
+                              th:class="${!mem.caughtUp ? 'inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10' : 'inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700 ring-1 ring-inset ring-gray-600/10'}">
+                              <span th:text="${thread.posts.size()}"></span><span class="ml-1">comment<span th:text="${thread.posts.size() != 1 ? 's' : ''}"></span></span>
+                            </span>
+                          </div>
                         </div>
-                        
+
                         <div class="text-sm text-gray-500 inline-content inline-content line-clamp-2" th:if="${!thread.posts.empty}">
                           <span th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                 th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName + ': '}"></span>

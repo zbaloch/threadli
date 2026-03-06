@@ -27,5 +27,7 @@ public interface ThreadRepository extends JpaRepository<Thread, Long> {
     // Excludes soft-deleted threads - use for single thread lookup
     Optional<Thread> findByWorkspaceIdAndIdAndIsDeletedFalse(Long workspaceId, Long threadId);
 
+    // Find threads by channel, excluding soft-deleted threads
+    List<Thread> findByWorkspaceIdAndChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(Long workspaceId, Long channelId);
 
 }

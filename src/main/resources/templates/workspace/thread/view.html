@@ -130,8 +130,13 @@
 
               <div class="mt-4 lg:flex lg:items-center lg:justify-between">
                 <div class="min-w-0 flex-1">
-                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight" th:text="${thread.title}">
-                    New thread
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    <span th:text="${thread.title}">New thread</span>
+                    <a th:if="${thread.channel != null}"
+                       th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${thread.channel.id})}"
+                       class="ml-2 inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10 hover:bg-cyan-100">
+                      <span>#</span><span th:text="${thread.channel.name}"></span>
+                    </a>
                   </h2>
                 </div>
 

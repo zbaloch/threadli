@@ -78,7 +78,8 @@ public class WorkspaceController {
         model.addAttribute("workspace", workspace);
         model.addAttribute("userThreads", userThreads);
         model.addAttribute("view", "threads");
-        
+        model.addAttribute("pageTitle", "Threads");
+
         // If the user can access the workspace, continue with the workspace vieww
         // Redirect the user to the first channel in this workspace
         return "workspace/view";
@@ -99,6 +100,7 @@ public class WorkspaceController {
         }
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
+        model.addAttribute("pageTitle", "Settings & Members");
         // If the user can access the workspace, continue with the workspace vieww
         return "workspace/settings/general";
     }
