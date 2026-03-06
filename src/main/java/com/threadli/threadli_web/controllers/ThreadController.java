@@ -127,6 +127,35 @@ public class ThreadController {
         return ResponseEntity.ok(members);
     }
 
+    @GetMapping("/t/list")
+    public String listThreads(Principal principal, Model model) {
+        User user = userRepository.findByEmail(principal.getName());
+
+        // Get all threads where the user is a member, ordered by most recently updated
+        List<Thread> userThreads = threadRepository.findByMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(user.getId());
+
+        // Get user's channels for sidebar
+        java.util.Set<Long> userChannelIds = userThreads.stream()
+                .filter(t -> t.getChannel() != null)
+                .map(t -> t.getChannel().getId())
+                .collect(java.util.stream.Collectors.toSet());
+        List<Channel> userChannels = userChannelIds.stream()
+                .map(id -> channelRepository.findById(id).orElse(null))
+                .filter(channel -> channel != null)
+                .collect(java.util.stream.Collectors.toList());
+
+        boolean isAdmin = user.isAdmin();
+
+        model.addAttribute("threads", userThreads);
+        model.addAttribute("user", user);
+        model.addAttribute("userChannels", userChannels);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("view", "workspace");
+        model.addAttribute("pageTitle", "Threadli | Threads");
+
+        return "workspace/view";
+    }
+
     @PostMapping("/compose")
     public String createThread(@RequestParam("title") String title,
                                 @RequestParam("content") String content,
