@@ -240,8 +240,15 @@ public class ThreadController {
             return "redirect:/?error=thread_access_denied";
         }
 
+        // Get all users in the system (excluding current user) for the add people form
+        List<User> allUsers = userRepository.findAll();
+        List<User> availableUsers = allUsers.stream()
+            .filter(u -> !u.getId().equals(user.getId()))
+            .collect(Collectors.toList());
+
         model.addAttribute("thread", thread);
         model.addAttribute("user", user);
+        model.addAttribute("availableUsers", availableUsers);
 
         // Check if the user is already a member of the thread
         boolean isMember = threadMembershipRepository.findByThreadId(thread.getId()).stream()
