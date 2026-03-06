@@ -122,7 +122,7 @@
           <li>
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
-              <li th:each="channel_ : ${workspace.channels}">
+              <li th:each="channel_ : ${userChannels}">
                 <a th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${channel_.id})}"
                   th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -230,7 +230,7 @@
           <li>
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li th:each="channel_ : ${workspace.channels}">
+                <li th:each="channel_ : ${userChannels}">
                     <a th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${channel_.id})}"
                       th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

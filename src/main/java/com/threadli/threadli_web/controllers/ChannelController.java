@@ -46,6 +46,7 @@ public class ChannelController {
 
     /**
      * Get all channels for a workspace as JSON (for Alpine.js typeahead)
+     * Only returns channels where the user has at least one thread
      */
     @GetMapping("/api/w/{workspaceId}/channels")
     @ResponseBody
@@ -59,7 +60,18 @@ public class ChannelController {
             return ResponseEntity.notFound().build();
         }
 
+        // Get user's threads in this workspace
+        List<Thread> userThreads = threadRepository
+                .findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+
+        // Get channel IDs where user has threads
+        java.util.Set<Long> userChannelIds = userThreads.stream()
+                .filter(thread -> thread.getChannel() != null)
+                .map(thread -> thread.getChannel().getId())
+                .collect(Collectors.toSet());
+
         List<Map<String, Object>> channels = workspace.getChannels().stream()
+                .filter(channel -> userChannelIds.contains(channel.getId()))
                 .map(channel -> {
                     Map<String, Object> ch = new HashMap<>();
                     ch.put("id", channel.getId());
@@ -98,18 +110,34 @@ public class ChannelController {
             return "redirect:/w/" + workspaceId;
         }
 
-        // Get all non-deleted threads in this channel, ordered by most recent
-        List<Thread> threads = threadRepository
+        // Get all non-deleted threads in this channel where user is a member, ordered by most recent
+        List<Thread> allChannelThreads = threadRepository
                 .findByWorkspaceIdAndChannelIdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, channelId);
+        List<Thread> threads = allChannelThreads.stream()
+                .filter(thread -> thread.getMemberships().stream()
+                        .anyMatch(membership -> membership.getUser().getId().equals(user.getId())))
+                .collect(Collectors.toList());
 
         // Check if user is admin
         boolean isAdmin = workspace.getMemberships().stream()
                 .anyMatch(membership -> membership.getUser().getId().equals(user.getId())
                         && membership.getRole() == WorkspaceRole.ADMIN);
 
+        // Get all user's threads in workspace to filter channels
+        List<Thread> userWorkspaceThreads = threadRepository
+                .findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+        java.util.Set<Long> userChannelIds = userWorkspaceThreads.stream()
+                .filter(thread -> thread.getChannel() != null)
+                .map(thread -> thread.getChannel().getId())
+                .collect(Collectors.toSet());
+        List<Channel> userChannels = workspace.getChannels().stream()
+                .filter(ch -> userChannelIds.contains(ch.getId()))
+                .collect(Collectors.toList());
+
         model.addAttribute("workspace", workspace);
         model.addAttribute("channel", channel);
         model.addAttribute("threads", threads);
+        model.addAttribute("userChannels", userChannels);
         model.addAttribute("user", user);
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("view", "channel");

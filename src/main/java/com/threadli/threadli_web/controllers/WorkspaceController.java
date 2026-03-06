@@ -25,8 +25,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.security.SecureRandom;
 import com.threadli.threadli_web.models.Thread;
+import com.threadli.threadli_web.models.Channel;
 
 
 
@@ -72,11 +75,21 @@ public class WorkspaceController {
        
         // List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_Id(workspaceId, user.getId());
         List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
-        
+
+        // Filter channels to only show those where user has threads
+        Set<Long> userChannelIds = userThreads.stream()
+            .filter(thread -> thread.getChannel() != null)
+            .map(thread -> thread.getChannel().getId())
+            .collect(Collectors.toSet());
+        List<Channel> userChannels = workspace.getChannels().stream()
+            .filter(channel -> userChannelIds.contains(channel.getId()))
+            .collect(Collectors.toList());
+
         model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         model.addAttribute("userThreads", userThreads);
+        model.addAttribute("userChannels", userChannels);
         model.addAttribute("view", "threads");
         model.addAttribute("pageTitle", "Threads");
 
