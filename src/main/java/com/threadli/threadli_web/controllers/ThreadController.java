@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.threadli.threadli_web.models.Channel;
 import com.threadli.threadli_web.models.Post;
 import com.threadli.threadli_web.models.ThreadMembership;
 import com.threadli.threadli_web.models.User;
 import com.threadli.threadli_web.models.Workspace;
 import com.threadli.threadli_web.models.WorkspaceRole;
+import com.threadli.threadli_web.repositories.ChannelRepository;
 import com.threadli.threadli_web.repositories.PostRepository;
 import com.threadli.threadli_web.repositories.ThreadMembershipRepository;
 import com.threadli.threadli_web.repositories.ThreadRepository;
@@ -58,7 +60,10 @@ public class ThreadController {
 
     @Autowired
     private ThreadMembershipRepository threadMembershipRepository;
-    
+
+    @Autowired
+    private ChannelRepository channelRepository;
+
     /**
      * Security helper method to verify if a user is a member of a specific thread
      * @param threadId The thread ID to check
@@ -70,10 +75,31 @@ public class ThreadController {
         return memberships.stream()
             .anyMatch(membership -> membership.getUser().getId().equals(userId));
     }
+
+    /**
+     * Capitalize the first letter of each word
+     * E.g. "engineering team" -> "Engineering Team"
+     */
+    private String capitalizeWords(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        String[] words = input.split(" ");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (!word.isEmpty()) {
+                result.append(Character.toUpperCase(word.charAt(0)))
+                        .append(word.substring(1))
+                        .append(" ");
+            }
+        }
+        return result.toString().trim();
+    }
     
 
     @GetMapping("/w/{workspaceId}/compose")
-    public String accessWorkspace(@PathVariable Long workspaceId, 
+    public String accessWorkspace(@PathVariable Long workspaceId,
+                                    @RequestParam(value = "channel", required = false) String channel,
                                     Principal principal,
                                   RedirectAttributes redirectAttributes,
                                   Model model) {
@@ -83,7 +109,11 @@ public class ThreadController {
         model.addAttribute("user", user);
         model.addAttribute("workspace", workspace);
         model.addAttribute("workspaceMembers", workspace.getMemberships());
+        if (channel != null) {
+            model.addAttribute("prefilledChannel", channel);
+        }
         model.addAttribute("view", "workspace");
+        model.addAttribute("pageTitle", "New Thread");
         return "workspace/thread/compose";
     }
 
@@ -116,10 +146,11 @@ public class ThreadController {
     }
 
     @PostMapping("/w/{workspaceId}/compose")
-    public String createThread(@PathVariable Long workspaceId, 
+    public String createThread(@PathVariable Long workspaceId,
                                 @RequestParam("title") String title,
                                 @RequestParam("content") String content,
                                 @RequestParam(value = "selectedMembers", required = false) List<Long> selectedMemberIds,
+                                @RequestParam(value = "channelName", required = false) String channelName,
                                 Principal principal,
                                 Model model) {
         User user = userRepository.findByEmail(principal.getName());
@@ -128,6 +159,28 @@ public class ThreadController {
         thread.setTitle(title);
         thread.setCreatedBy(user);
         thread.setWorkspace(workspace);
+
+        // Handle channel assignment
+        if (channelName != null && !channelName.trim().isEmpty()) {
+            // Clean input: remove #, trim spaces
+            String cleanedName = channelName.replace("#", "").trim();
+
+            if (!cleanedName.isEmpty()) {
+                // Generate slug for lookups
+                String slug = Channel.generateSlug(cleanedName);
+
+                // Find or create channel
+                Channel channel = channelRepository.findByWorkspaceIdAndSlug(workspaceId, slug)
+                        .orElseGet(() -> {
+                            // Auto-capitalize first letter and first letter after space
+                            String displayName = capitalizeWords(cleanedName);
+                            Channel newChannel = new Channel(displayName, workspace, user);
+                            return channelRepository.save(newChannel);
+                        });
+                thread.setChannel(channel);
+            }
+        }
+
         threadRepository.save(thread);
         
         // Add the creator to the thread
@@ -314,14 +367,26 @@ public class ThreadController {
         List<Post> posts = postRepository.findByThreadId(thread.getId());
 
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
-        model.addAttribute("isAdmin", isAdmin);
 
+        // Get user's threads to filter channels for sidebar
+        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+        java.util.Set<Long> userChannelIds = userThreads.stream()
+                .filter(t -> t.getChannel() != null)
+                .map(t -> t.getChannel().getId())
+                .collect(java.util.stream.Collectors.toSet());
+        List<com.threadli.threadli_web.models.Channel> userChannels = workspace.getChannels().stream()
+                .filter(channel -> userChannelIds.contains(channel.getId()))
+                .collect(java.util.stream.Collectors.toList());
+
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("memberships",memberships);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
+        model.addAttribute("userChannels", userChannels);
         model.addAttribute("view", "threads");
+        model.addAttribute("pageTitle", thread.getTitle());
         return "workspace/thread/view";
     }
 

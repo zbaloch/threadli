@@ -30,6 +30,10 @@ public class Workspace {
     @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Thread> threads = new ArrayList<>();
 
+    @OneToMany(mappedBy = "workspace", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("name ASC")
+    private List<Channel> channels = new ArrayList<>();
+
     @PrePersist
     protected void onCreate() {
         createdAt = Instant.now();

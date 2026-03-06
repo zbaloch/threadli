@@ -52,7 +52,11 @@ public class Thread {
 
     @ManyToOne
 	@JoinColumn(name = "workspace_id")
-	private Workspace workspace; 
+	private Workspace workspace;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "channel_id")
+    private Channel channel;
 
     // Thread can only be cloased by who created it
     private boolean isClosed = false;

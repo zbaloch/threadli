@@ -128,28 +128,32 @@
                 </a>
               </nav>
 
-              <div class="mt-4 lg:flex lg:items-center lg:justify-between">
+              <div class="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div class="min-w-0 flex-1">
-                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight" th:text="${thread.title}">
-                    New thread
+                  <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                    <span th:text="${thread.title}">New thread</span>
+                    <a th:if="${thread.channel != null}"
+                       th:href="@{/w/{workspaceId}/c/{channelId}(workspaceId=${workspace.id}, channelId=${thread.channel.id})}"
+                       class="ml-2 inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10 hover:bg-cyan-100">
+                      <span>#</span><span th:text="${thread.channel.name}"></span>
+                    </a>
                   </h2>
                 </div>
 
-                <div class="mt-5 flex lg:ml-4 lg:mt-0">
+                <div class="flex items-center gap-3 flex-shrink-0">
                   <div class="flex -space-x-2 overflow-hidden">
-                    <img th:each="member, iterStat : ${memberships}"  
-                    class="inline-block h-10 w-10 rounded-full ring-2 ring-white" 
-                    th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}" 
+                    <img th:each="member, iterStat : ${memberships}"
+                    class="inline-block h-10 w-10 rounded-full ring-2 ring-white"
+                    th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}"
                     th:alt="${member.user.firstName + ' ' + member.user.lastName}"
                     th:data-member-id="${member.user.id}"
                     th:data-member-name="${member.user.firstName + ' ' + member.user.lastName}"
                     th:data-member-email="${member.user.email}"
                     th:data-member-avatar="${'https://api.dicebear.com/9.x/initials/svg?seed=' + member.user.firstName + ' ' + member.user.lastName}">
                   </div>
-                </div>
 
-                <div class="mt-4 flex items-center justify-between sm:ml-6 sm:mt-0 sm:flex-shrink-0 sm:justify-start" 
-                x-data="{open: false}">
+                  <div class="flex items-center justify-end"
+                  x-data="{open: false}">
                   <!-- <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">Open</span> -->
                   <div class="relative ml-3 inline-block text-left">
                     <div>
