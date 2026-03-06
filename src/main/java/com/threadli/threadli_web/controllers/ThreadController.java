@@ -367,13 +367,24 @@ public class ThreadController {
         List<Post> posts = postRepository.findByThreadId(thread.getId());
 
         boolean isAdmin = workspace.getMemberships().stream().anyMatch(membership -> membership.getUser().getId() == user.getId() && membership.getRole() == WorkspaceRole.ADMIN);
-        model.addAttribute("isAdmin", isAdmin);
 
+        // Get user's threads to filter channels for sidebar
+        List<Thread> userThreads = threadRepository.findByWorkspaceIdAndMemberships_User_IdAndIsDeletedFalseOrderByUpdatedAtDesc(workspaceId, user.getId());
+        java.util.Set<Long> userChannelIds = userThreads.stream()
+                .filter(t -> t.getChannel() != null)
+                .map(t -> t.getChannel().getId())
+                .collect(java.util.stream.Collectors.toSet());
+        List<com.threadli.threadli_web.models.Channel> userChannels = workspace.getChannels().stream()
+                .filter(channel -> userChannelIds.contains(channel.getId()))
+                .collect(java.util.stream.Collectors.toList());
+
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("workspace", workspace);
         model.addAttribute("thread", thread);
         model.addAttribute("memberships",memberships);
         model.addAttribute("user", user);
         model.addAttribute("posts", posts);
+        model.addAttribute("userChannels", userChannels);
         model.addAttribute("view", "threads");
         model.addAttribute("pageTitle", thread.getTitle());
         return "workspace/thread/view";
