@@ -118,7 +118,7 @@ public class UserController {
 
             // First user to register is admin
             if (userRepository.count() == 1) {
-                existingUser.setAdmin(true);
+                existingUser.setIsAdmin(true);
             }
 
             userRepository.save(existingUser);
