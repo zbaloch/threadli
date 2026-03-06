@@ -129,18 +129,16 @@
                         <img class="h-10 w-10 rounded-full" th:src="${'https://api.dicebear.com/9.x/initials/svg?seed=' + thread.createdBy.firstName + ' ' + thread.createdBy.lastName}" th:alt="${thread.createdBy.firstName + ' ' + thread.createdBy.lastName}">
                       </div>
                       <div class="min-w-0 flex-1">
-                        <div class="flex justify-between items-start gap-2">
-                          <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-1 text-sm font-semibold text-gray-900 min-h-[1.5rem]">
-                              <span th:text="${thread.title}"></span>
-                              <span th:if="${thread.channel != null}"
-                                 class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
-                                <span>#</span><span th:text="${thread.channel.name}"></span>
-                              </span>
-                            </div>
+                        <div class="flex justify-between items-center gap-2">
+                          <div class="flex-1 flex flex-wrap items-center gap-2 min-h-[1.5rem]">
+                            <span class="text-sm font-semibold text-gray-900" th:text="${thread.title}"></span>
                             <span class="text-xs text-gray-500"
                               th:with="lastPost=${thread.posts.empty ? null : thread.posts[thread.posts.size() - 1]}"
                               th:text="${lastPost != null ? #dates.format(lastPost.createdAt, 'MMMM d, h:mm a') : 'No posts yet'}">
+                            </span>
+                            <span th:if="${thread.channel != null}"
+                               class="inline-flex items-center rounded-full bg-cyan-50 px-2 py-0.5 text-xs font-medium text-cyan-700 ring-1 ring-inset ring-cyan-700/10">
+                              <span>#</span><span th:text="${thread.channel.name}"></span>
                             </span>
                           </div>
 
