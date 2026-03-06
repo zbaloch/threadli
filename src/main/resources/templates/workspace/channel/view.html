@@ -107,6 +107,8 @@
 
                             <span class="text-gray-400">•</span>
 
+                            <span class="text-gray-400">—</span>
+
                             <span class="text-sm text-gray-400" th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName}"></span>
 
@@ -176,6 +178,8 @@
 
                             <span class="text-gray-400">•</span>
 
+                            <span class="text-gray-400">—</span>
+
                             <span class="text-sm text-gray-400" th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName}"></span>
 
@@ -244,6 +248,8 @@
                                   th:utext="${lastPost.content}" class="text-gray-700"></span>
 
                             <span class="text-gray-400">•</span>
+
+                            <span class="text-gray-400">—</span>
 
                             <span class="text-sm text-gray-400" th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
                                   th:text="${lastPost.createdBy.firstName + ' ' + lastPost.createdBy.lastName}"></span>
