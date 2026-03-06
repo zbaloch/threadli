@@ -100,7 +100,7 @@ public class ChannelController {
                 .collect(Collectors.toList());
 
         // Check if user is admin
-        boolean isAdmin = user.isAdmin();
+        boolean isAdmin = user.getIsAdmin();
 
         // Get all user's threads to filter channels
         List<Thread> userThreads = threadRepository
