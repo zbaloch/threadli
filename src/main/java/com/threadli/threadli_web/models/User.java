@@ -29,7 +29,8 @@ public class User {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private boolean isAdmin = false;
+    @Column(columnDefinition = "boolean default false")
+    private Boolean isAdmin = false;
 
     @OneToMany(mappedBy = "user")
     private Set<ThreadMembership> threads = new HashSet<>();
