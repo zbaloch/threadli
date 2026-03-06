@@ -57,6 +57,8 @@ public class SettingsController {
     @PostMapping("/settings/members")
     public String inviteUser(
             @RequestParam String email,
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
             Principal principal,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -80,6 +82,13 @@ public class SettingsController {
             expirationDate.add(Calendar.HOUR, 1);
             existingUser.setTokenExpirationDate(expirationDate);
             existingUser.setTokenUsedDate(null);
+            // Update name if provided
+            if (firstName != null && !firstName.trim().isEmpty()) {
+                existingUser.setFirstName(firstName);
+            }
+            if (lastName != null && !lastName.trim().isEmpty()) {
+                existingUser.setLastName(lastName);
+            }
             userRepository.save(existingUser);
             emailService.sendEmail(existingUser);
             log.info("Sent login magic link to existing user: {}", email);
@@ -88,6 +97,12 @@ public class SettingsController {
             // New user, send signup magic link
             User newUser = new User();
             newUser.setEmail(email);
+            if (firstName != null && !firstName.trim().isEmpty()) {
+                newUser.setFirstName(firstName);
+            }
+            if (lastName != null && !lastName.trim().isEmpty()) {
+                newUser.setLastName(lastName);
+            }
             newUser.setToken(token);
             Calendar expirationDate = Calendar.getInstance();
             expirationDate.add(Calendar.HOUR, 1);
