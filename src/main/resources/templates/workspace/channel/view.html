@@ -108,8 +108,8 @@
                             <span class="text-gray-400">•</span>
 
                             <span class="text-xs text-gray-400"
-                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
-                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}, daysDiff=${#dates.daysBetween(lastPost.createdAt, #dates.createNow())}"
+                            th:text="${daysDiff > 30 ? #dates.format(lastPost.createdAt, 'MMM d, yyyy') : #dates.format(lastPost.createdAt, 'MMM d')}">
                           </span>
 
                             <span class="text-gray-400">—</span>
@@ -177,8 +177,8 @@
                             <span class="text-gray-400">•</span>
 
                             <span class="text-xs text-gray-400"
-                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
-                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}, daysDiff=${#dates.daysBetween(lastPost.createdAt, #dates.createNow())}"
+                            th:text="${daysDiff > 30 ? #dates.format(lastPost.createdAt, 'MMM d, yyyy') : #dates.format(lastPost.createdAt, 'MMM d')}">
                           </span>
 
                             <span class="text-gray-400">—</span>
@@ -246,8 +246,8 @@
                             <span class="text-gray-400">•</span>
 
                             <span class="text-xs text-gray-400"
-                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}"
-                            th:text="${#dates.format(lastPost.createdAt, 'MMM d, h:mm a')}">
+                            th:with="lastPost=${thread.posts[thread.posts.size() - 1]}, daysDiff=${#dates.daysBetween(lastPost.createdAt, #dates.createNow())}"
+                            th:text="${daysDiff > 30 ? #dates.format(lastPost.createdAt, 'MMM d, yyyy') : #dates.format(lastPost.createdAt, 'MMM d')}">
                           </span>
 
                             <span class="text-gray-400">—</span>
