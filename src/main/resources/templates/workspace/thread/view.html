@@ -72,15 +72,15 @@
       
       async submitAddPeople() {
         if (this.selectedPeople.length === 0 || this.isSubmitting) return;
-        
+
         this.isSubmitting = true;
         try {
           const formData = new FormData();
           this.selectedPeople.forEach(person => {
             formData.append('memberIds', person.id);
           });
-          
-          const response = await fetch(`/w/${workspaceId}/t/${threadId}/add-people`, {
+
+          const response = await fetch(`/t/${threadId}/add-people`, {
             method: 'POST',
             body: formData
           });
