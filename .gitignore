@@ -35,3 +35,4 @@ build/
 .env
 *.db
 threadli.db
+*.env
