@@ -10,10 +10,6 @@ Key features of Threadli include:
 - Focus on Clarity: It’s built for deep work, with fewer interruptions compared to traditional chat-based tools.
 - Threadli is especially useful for teams that prioritize focus and long-term project collaboration rather than constant back-and-forth communication.
 
-# CE Dual License
-
-Threadli is source-available under a Fair Use license. Available to companies with under $5M in revenue — it is not an Apache 2 open source product. If your company revenue is $5M a year then please purchase a license for usage.
-
 
 
 ### Project Setup 
