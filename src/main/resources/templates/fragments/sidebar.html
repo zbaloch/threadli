@@ -122,14 +122,9 @@
           <li>
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
-              <li th:each="channel_ : ${userChannels}">
-                <a th:href="@{/c/{channelId}(channelId=${channel_.id})}"
-                  th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    th:class="${view == 'channel' && channel_.id == channel.id ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
-                  </svg>
-                  <span class="flex items-center gap-1"><span>#</span><span th:text="${channel_.name}">General</span></span>
+              <li th:each="channel_ : ${userChannels}" th:class="${view == 'channel' && channel_.id == channel.id ? 'group rounded-md bg-gray-50 p-2 text-sm' : 'group rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50'}">
+                <a th:href="@{/c/{channelId}(channelId=${channel_.id})}">
+                  <span th:text="${channel_.name}">General</span>
                 </a>
               </li>
             </ul>
@@ -230,14 +225,9 @@
           <li>
             <div class="text-xs font-semibold leading-6 text-gray-400">Channels</div>
             <ul role="list" class="-mx-2 mt-2 space-y-1">
-                <li th:each="channel_ : ${userChannels}">
-                    <a th:href="@{/c/{channelId}(channelId=${channel_.id})}"
-                      th:class="${view == 'channel' && channel_.id == channel.id ? 'group flex gap-x-3 rounded-md bg-gray-50 p-2 text-sm text-cyan-600 fill-cyan-500' : 'group flex gap-x-3 rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-cyan-600'}">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                        th:class="${view == 'channel' && channel_.id == channel.id ? 'h-5 w-5 shrink-0 text-cyan-600' : 'h-5 w-5 shrink-0 text-gray-400 group-hover:text-cyan-600'}">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
-                      </svg>
-                      <span class="flex items-center gap-1"><span>#</span><span th:text="${channel_.name}">General</span></span>
+                <li th:each="channel_ : ${userChannels}" th:class="${view == 'channel' && channel_.id == channel.id ? 'group rounded-md bg-gray-50 p-2 text-sm' : 'group rounded-md p-2 text-sm text-gray-700 hover:bg-gray-50'}">
+                    <a th:href="@{/c/{channelId}(channelId=${channel_.id})}">
+                      <span th:text="${channel_.name}">General</span>
                     </a>
                   </li>
             </ul>
